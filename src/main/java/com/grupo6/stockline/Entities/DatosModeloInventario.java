@@ -1,9 +1,8 @@
 package com.grupo6.stockline.Entities;
 
+import com.grupo6.stockline.Enum.ModeloInventario;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
@@ -24,6 +23,6 @@ public class DatosModeloInventario {
     @JoinColumn(name = "articulo_id")
     private Articulo articulo;
 
-    @ManyToOne @JoinColumn(name = "modelo_inventario_id")
+    @Enumerated(EnumType.STRING)
     private ModeloInventario modeloInventario;
 }
