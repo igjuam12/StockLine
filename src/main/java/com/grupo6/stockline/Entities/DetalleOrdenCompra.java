@@ -7,11 +7,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetalleOrdenCompra {
+public class DetalleOrdenCompra extends Base{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private Integer cantidad;
 
     @ManyToOne

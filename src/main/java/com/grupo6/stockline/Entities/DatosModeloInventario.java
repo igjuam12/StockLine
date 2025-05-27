@@ -8,11 +8,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DatosModeloInventario {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class DatosModeloInventario extends Base{
 
     private Integer inventarioMaximo;
     private Integer loteOptimo;

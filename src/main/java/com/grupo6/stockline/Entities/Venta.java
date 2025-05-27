@@ -10,11 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Venta {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Venta extends Base{
 
     private LocalDate fechaVenta;
     private Integer   totalVenta;

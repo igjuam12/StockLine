@@ -11,11 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrdenCompra {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class OrdenCompra extends Base{
 
     private LocalDate fechaModificacionOrdenCompra;
     private LocalDate fechaOrdenCompra;

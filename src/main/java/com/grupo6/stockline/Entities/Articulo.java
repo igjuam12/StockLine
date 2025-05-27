@@ -11,11 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Articulo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Articulo extends Base{
 
     private Integer costoAlmacenamiento;
     private Integer costoCompra;

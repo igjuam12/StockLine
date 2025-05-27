@@ -8,11 +8,7 @@ import java.util.List;
 
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
-public class Proveedor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Proveedor extends Base{
 
     private LocalDate fechaAltaProveedor;
     private LocalDate fechaBajaProveedor;

@@ -10,11 +10,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticuloProveedor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ArticuloProveedor extends Base{
 
     private Integer cargoPedido;
     private Integer demoraEntrega;
