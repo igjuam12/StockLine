@@ -28,24 +28,21 @@ public class Articulo {
     private String  nombreArticulo;
     private Integer stockActual;
 
-    /* Relaciones ---------------------------------------------------------- */
-
-    // Default supplier (“PREDETERMINADO”)
     @ManyToOne
     @JoinColumn(name = "proveedor_predeterminado_id")
     private Proveedor proveedorPredeterminado;
 
     @OneToMany(mappedBy = "articulo")
-    private List<DetalleOrdenCompra> detallesOrdenCompra;
+    private List<DetalleOrdenCompra> detalleOrdenCompra;
 
     @OneToMany(mappedBy = "articulo")
-    private List<DetalleVenta> detallesVenta;
+    private List<DetalleVenta> detalleVenta;
 
     @OneToMany(mappedBy = "articulo")
-    private List<ArticuloProveedor> articulosProveedores;
+    private List<ArticuloProveedor> articuloProveedor;
 
     @OneToMany(mappedBy = "articulo")
-    private List<DatosModeloInventario> datosModelosInventario;
+    private List<DatosModeloInventario> datosModeloInventario;
 
     @Enumerated(EnumType.STRING)
     private ModeloInventario modeloInventario;

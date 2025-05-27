@@ -12,17 +12,20 @@ public class Proveedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;           // ≈ codProveedor
+    private Long id;
 
     private LocalDate fechaAltaProveedor;
     private LocalDate fechaBajaProveedor;
     private String    mailProveedor;
     private String    nombreProveedor;
 
-    /* Relaciones */
+
     @OneToMany(mappedBy = "proveedor")
-    private List<ArticuloProveedor> articulosProveedores;
+    private List<ArticuloProveedor> articuloProveedor;
 
     @OneToMany(mappedBy = "proveedorPredeterminado")
-    private List<Articulo> articulosPredeterminados;
+    private List<Articulo> articuloPredeterminado; //revisar
+
+    @OneToMany(mappedBy = "proveedor")
+    private List<OrdenCompra> ordenCompra;
 }

@@ -14,11 +14,11 @@ public class Venta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;      // codVenta
+    private Long id;
 
     private LocalDate fechaVenta;
     private Integer   totalVenta;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
-    private List<DetalleVenta> detalles;
+    private List<DetalleVenta> detalleVenta;
 }

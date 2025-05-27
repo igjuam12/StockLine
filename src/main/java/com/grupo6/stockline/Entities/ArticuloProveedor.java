@@ -25,6 +25,7 @@ public class ArticuloProveedor {
     @JoinColumn(name = "articulo_id")
     private Articulo articulo;
 
-    @ManyToOne @JoinColumn(name = "proveedor_id")
+    @ManyToOne
+    @JoinColumn(name = "proveedor_id")
     private Proveedor proveedor;
 }

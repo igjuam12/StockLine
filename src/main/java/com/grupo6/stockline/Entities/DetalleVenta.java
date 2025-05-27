@@ -20,6 +20,7 @@ public class DetalleVenta {
     @JoinColumn(name = "venta_id")
     private Venta venta;
 
-    @ManyToOne @JoinColumn(name = "articulo_id")
+    @ManyToOne
+    @JoinColumn(name = "articulo_id")
     private Articulo articulo;
 }

@@ -15,14 +15,18 @@ public class OrdenCompra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;   // codOrdenCompra
+    private Long id;
 
     private LocalDate fechaModificacionOrdenCompra;
     private LocalDate fechaOrdenCompra;
 
     @Enumerated(EnumType.STRING)
-    private EstadoOrdenCompra estado;
+    private EstadoOrdenCompra estadoOrdenCompra;
 
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL)
-    private List<DetalleOrdenCompra> detalles;
+    private List<DetalleOrdenCompra> detalleOrdenCompra;
+
+    @ManyToOne
+    @JoinColumn(name = "proveedor_id")
+    private Proveedor proveedor;
 }
