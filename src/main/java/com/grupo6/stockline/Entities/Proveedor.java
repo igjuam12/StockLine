@@ -7,20 +7,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Proveedor extends Base{
 
-    private LocalDate fechaAltaProveedor;
-    private LocalDate fechaBajaProveedor;
-    private String    mailProveedor;
-    private String    nombreProveedor;
+    private LocalDate fechaAlta;
+    private LocalDate fechaBaja;
+    private String mailProveedor;
+    private String nombreProveedor;
 
 
     @OneToMany(mappedBy = "proveedor")
     private List<ArticuloProveedor> articuloProveedor;
 
     @OneToMany(mappedBy = "proveedorPredeterminado")
-    private List<Articulo> articuloPredeterminado; //revisar
+    private List<Articulo> articuloPredeterminado;
 
     @OneToMany(mappedBy = "proveedor")
     private List<OrdenCompra> ordenCompra;

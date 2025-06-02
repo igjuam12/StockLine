@@ -14,7 +14,7 @@ public class ArticuloProveedor extends Base{
 
     private Integer cargoPedido;
     private Integer demoraEntrega;
-    private LocalDate fechaAltaArticuloProveedor;
+    private LocalDate fechaAlta;
     private Integer precioArticulo;
 
     @ManyToOne
