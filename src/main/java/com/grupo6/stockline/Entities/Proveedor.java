@@ -10,8 +10,6 @@ import java.util.List;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Proveedor extends Base{
 
-    private LocalDate fechaAltaProveedor;
-    private LocalDate fechaBajaProveedor;
     private String    mailProveedor;
     private String    nombreProveedor;
 

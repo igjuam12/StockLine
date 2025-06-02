@@ -3,7 +3,6 @@ package com.grupo6.stockline.Service;
 import com.grupo6.stockline.Entities.Base;
 import com.grupo6.stockline.Repositories.BaseRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,10 +35,9 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> i
     }
 
     @Transactional
-    public E save(E entity) throws Exception {
+    public void save(E entity) throws Exception {
         try {
-            entity = baseRepository.save(entity);
-            return entity;
+            baseRepository.save(entity);
         } catch (Exception e){
             throw new Exception(e.getMessage());
         }
@@ -47,12 +45,11 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> i
 
 
     @Transactional
-    public E update(ID id, E entity) throws Exception {
+    public void update(ID id, E entity) throws Exception {
         try {
             Optional<E> entityOptional = baseRepository.findById(id);
-            E cliente = entityOptional.get();
-            cliente = baseRepository.save(entity);
-            return cliente;
+            E entityUpdate = entityOptional.get();
+            baseRepository.save(entity);
         } catch (Exception e){
             throw new Exception(e.getMessage());
         }
@@ -63,7 +60,7 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> i
     public boolean delete(ID id) throws Exception {
         try {
             if (baseRepository.existsById(id)){
-                baseRepository.deleteById(id);
+                baseRepository.darDeBajaPorId(id);
                 return true;
             } else{
                 throw new Exception();

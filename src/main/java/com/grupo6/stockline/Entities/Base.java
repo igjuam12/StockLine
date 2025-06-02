@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @MappedSuperclass
 @Getter
@@ -20,5 +21,8 @@ public class Base implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    private LocalDate fechaBaja;
+    private LocalDate fechaAlta;
 
 }

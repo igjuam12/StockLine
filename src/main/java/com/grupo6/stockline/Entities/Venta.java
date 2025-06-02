@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Venta extends Base{
 
-    private LocalDate fechaVenta;
     private Integer   totalVenta;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)

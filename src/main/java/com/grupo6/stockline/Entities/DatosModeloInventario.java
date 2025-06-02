@@ -4,6 +4,8 @@ import com.grupo6.stockline.Enum.ModeloInventario;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -14,6 +16,8 @@ public class DatosModeloInventario extends Base{
     private Integer loteOptimo;
     private Integer puntoPedido;
     private Integer stockSeguridad;
+
+
 
     @ManyToOne
     @JoinColumn(name = "articulo_id")

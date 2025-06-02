@@ -18,9 +18,6 @@ public class Articulo extends Base{
     private Integer costoPedido;
     private Integer demandaArticulo;
     private String  descripcionArticulo;
-    private LocalDate fechaAltaArticulo;
-    private LocalDate fechaBajaArticulo;
-    private LocalDate fechaModificacionArticulo;
     private String  nombreArticulo;
     private Integer stockActual;
 

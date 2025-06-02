@@ -14,7 +14,7 @@ import java.util.List;
 public class OrdenCompra extends Base{
 
     private LocalDate fechaModificacionOrdenCompra;
-    private LocalDate fechaOrdenCompra;
+
 
     @Enumerated(EnumType.STRING)
     private EstadoOrdenCompra estadoOrdenCompra;
