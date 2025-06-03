@@ -1,0 +1,28 @@
+<html lang="es" xmlns:th="http://www.thymeleaf.org" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockLine MVP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="flex flex-col min-h-screen">
+
+<!-- NAVBAR -->
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<!-- CONTENIDO -->
+<div class="flex-grow">
+    <main class="py-6 sm:px-6 lg:px-8"
+          th:with="fragmentPath=${contenido}">
+        <div th:replace="~{__${fragmentPath}__}"></div>
+    </main>
+</div>
+
+<!-- FOOTER -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

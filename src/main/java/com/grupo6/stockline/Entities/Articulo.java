@@ -11,15 +11,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Articulo extends Base{
+public class Articulo extends Base {
 
     private Integer costoAlmacenamiento;
     private Integer costoCompra;
     private Integer costoPedido;
     private Integer demandaArticulo;
     private String  descripcionArticulo;
-    private LocalDate fechaAlta;
-    private LocalDate fechaBaja;
     private LocalDate fechaModificacionArticulo;
     private String  nombreArticulo;
     private Integer stockActual;

@@ -1,0 +1,41 @@
+<div th:fragment="contenido">
+    <section class="bg-white p-6 rounded-xl shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">Gestión de Órdenes de Compra</h2>
+            <a th:href="@{/ordenCompra/nuevo}" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Nueva Orden de Compra
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100 text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha Modificación</th>
+                    <th>Estado</th>
+                    <th>Proveedor</th>
+                    <th>Fecha Compra</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody class="text-center">
+                <tr th:each="orden : ${listaOrdenes}">
+                    <td th:text="${orden.id}" class="px-4 py-2"></td>
+                    <td th:text="${orden.fechaModificacionOrdenCompra}" class="px-4 py-2"></td>
+                    <td th:text="${orden.estadoOrdenCompra}" class="px-4 py-2"></td>
+                    <td th:text="${orden.proveedor?.nombreProveedor}" class="px-4 py-2"></td>
+                    <td th:text="${orden.fechaAlta}" class="px-4 py-2"></td>
+                    <td class="px-4 py-2">
+                        <a th:href="@{/ordenCompra/editar/{id}(id=${orden.id})}" class="action-icon action-icon-edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/ordenCompra/detalle/{id}(id=${orden.id})}" class="action-icon action-icon-details">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

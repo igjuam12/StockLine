@@ -9,8 +9,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> implements BaseService<E, ID> {
-    protected BaseRepository<E,ID> baseRepository;
+public abstract class BaseServiceImpl<E extends Base, ID extends Long> implements BaseService<E, ID> {
+
+    protected BaseRepository<E, ID> baseRepository;
 
     public BaseServiceImpl(BaseRepository<E, ID> baseRepository) {
         this.baseRepository = baseRepository;
@@ -18,57 +19,55 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Serializable> i
 
     public List<E> findAll() throws Exception {
         try {
-            List<E> entities = baseRepository.findAll();
-            return entities;
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+            return baseRepository.findAll();
+        } catch (Exception e) {
+            throw new Exception("Error al obtener los datos: " + e.getMessage(), e);
         }
     }
 
     @Transactional
     public E findById(ID id) throws Exception {
         try {
-            Optional<E> entityOptional = baseRepository.findById(id);
-            return entityOptional.get();
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+            return baseRepository.findById(id)
+                    .orElseThrow(() -> new Exception("Entidad no encontrada con ID: " + id));
+        } catch (Exception e) {
+            throw new Exception("Error al buscar por ID: " + e.getMessage(), e);
         }
     }
 
     @Transactional
-    public E save(E entity) throws Exception {
+    public void save(E entity) throws Exception {
         try {
-            entity = baseRepository.save(entity);
-            return entity;
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+            baseRepository.save(entity);
+        } catch (Exception e) {
+            throw new Exception("Error al guardar la entidad: " + e.getMessage(), e);
         }
     }
 
-
     @Transactional
-    public E update(ID id, E entity) throws Exception {
+    public void update(ID id, E entity) throws Exception {
         try {
-            Optional<E> entityOptional = baseRepository.findById(id);
-            E cliente = entityOptional.get();
-            cliente = baseRepository.save(entity);
-            return cliente;
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+            if (!baseRepository.existsById(id)) {
+                throw new Exception("No se puede actualizar: entidad no encontrada con ID: " + id);
+            }
+            entity.setId(id);
+            baseRepository.save(entity);
+        } catch (Exception e) {
+            throw new Exception("Error al actualizar la entidad: " + e.getMessage(), e);
         }
     }
 
     @Transactional
     public boolean delete(ID id) throws Exception {
         try {
-            if (baseRepository.existsById(id)){
+            if (baseRepository.existsById(id)) {
                 baseRepository.darDeBajaPorId(id);
                 return true;
-            } else{
-                throw new Exception();
+            } else {
+                throw new Exception("Entidad no encontrada con ID: " + id);
             }
-        } catch (Exception e){
-            throw new Exception(e.getMessage());
+        } catch (Exception e) {
+            throw new Exception("Error al eliminar la entidad: " + e.getMessage(), e);
         }
     }
 }
