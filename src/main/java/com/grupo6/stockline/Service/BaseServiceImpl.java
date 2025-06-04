@@ -3,11 +3,8 @@ package com.grupo6.stockline.Service;
 import com.grupo6.stockline.Entities.Base;
 import com.grupo6.stockline.Repositories.BaseRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.BeanUtils;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class BaseServiceImpl<E extends Base, ID extends Long> implements BaseService<E, ID> {
 
@@ -58,11 +55,10 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Long> implement
     }
 
     @Transactional
-    public boolean delete(ID id) throws Exception {
+    public void delete(ID id) throws Exception {
         try {
             if (baseRepository.existsById(id)) {
                 baseRepository.darDeBajaPorId(id);
-                return true;
             } else {
                 throw new Exception("Entidad no encontrada con ID: " + id);
             }

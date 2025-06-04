@@ -21,9 +21,4 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
         super(baseRepository);
     }
 
-    @Override
-    public List<Articulo> buscarArticulosPorProveedor(Long id) {
-        return articuloRepository.findByProveedorPredeterminadoId(id);
-    }
-
 }

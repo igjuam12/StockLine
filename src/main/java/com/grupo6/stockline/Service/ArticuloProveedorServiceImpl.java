@@ -8,6 +8,8 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProveedor, Long> implements ArticuloProveedorService{
     @Autowired
@@ -18,4 +20,10 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
                                         ArticuloProveedorRepository articuloProveedorRepository) {
         super(baseRepository);
     }
+
+    @Override
+    public List<ArticuloProveedor> obtenerArticulosPorProveedor(Long proveedorId){
+        return articuloProveedorRepository.findByProveedorId(proveedorId);
+    }
+
 }

@@ -1,7 +1,4 @@
 <div th:fragment="contenido">
-    <div th:if="${exito}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-        <span th:text="${exito}"></span>
-    </div>
     <section class="bg-white p-6 rounded-xl shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">Gestión de Proveedores</h2>
@@ -21,7 +18,9 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="proveedor : ${listaProveedores}" class="text-center">
+                <tr th:each="proveedor : ${listaProveedores}"
+                    th:classappend="${proveedor.fechaBaja != null} ? 'bg-gray-100 pointer-events-none opacity-50' : ''"
+                    class="text-center transition-colors">
                     <td th:text="${proveedor.nombreProveedor}" class="px-4 py-2"></td>
                     <td th:text="${proveedor.mailProveedor}" class="px-4 py-2"></td>
                     <td th:text="${proveedor.fechaAlta}" class="px-4 py-2"></td>

@@ -1,8 +1,8 @@
 package com.grupo6.stockline.Controller;
 
-import com.grupo6.stockline.Entities.Articulo;
+import com.grupo6.stockline.Entities.ArticuloProveedor;
 import com.grupo6.stockline.Entities.Proveedor;
-import com.grupo6.stockline.Service.ArticuloService;
+import com.grupo6.stockline.Service.ArticuloProveedorService;
 import com.grupo6.stockline.Service.ProveedorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,7 +21,7 @@ import java.util.List;
 public class ProveedorController {
 
     private final ProveedorService proveedorService;
-    private final ArticuloService articuloService;
+    private final ArticuloProveedorService articuloProveedorService;
 
     @GetMapping("/listado")
     public String listarProveedores(Model model) throws Exception {
@@ -34,19 +34,22 @@ public class ProveedorController {
     @GetMapping("/{id}/articulos")
     public String listarArticulosPorProveedor(Model model, @PathVariable Long id) throws Exception {
         Proveedor proveedor = proveedorService.findById(id);
-        List<Articulo> articulos = articuloService.buscarArticulosPorProveedor(id);
+        List<ArticuloProveedor> articulosProveedor = articuloProveedorService.obtenerArticulosPorProveedor(id);
         model.addAttribute("proveedor", proveedor);
-        model.addAttribute("listaArticulos", articulos);
+        model.addAttribute("articulosProveedor", articulosProveedor);
         model.addAttribute("contenido", "proveedores/listadoArticulos :: contenido");
         return "layouts/base";
     }
 
     @PostMapping("{id}/baja")
     public String darDeBajaProveedor(@PathVariable Long id, RedirectAttributes redirectAttributes) throws Exception {
-        proveedorService.delete(id);
-        redirectAttributes.addFlashAttribute("exito", "Proveedor dado de baja correctamente.");
+        try {
+            proveedorService.delete(id);
+            redirectAttributes.addFlashAttribute("exito", "Proveedor dado de baja correctamente.");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/proveedor/listado";
     }
-
 
 }
