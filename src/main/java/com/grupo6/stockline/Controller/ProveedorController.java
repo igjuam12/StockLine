@@ -1,18 +1,18 @@
 package com.grupo6.stockline.Controller;
 
+import com.grupo6.stockline.Entities.Articulo;
 import com.grupo6.stockline.Entities.ArticuloProveedor;
 import com.grupo6.stockline.Entities.Proveedor;
 import com.grupo6.stockline.Service.ArticuloProveedorService;
+import com.grupo6.stockline.Service.ArticuloService;
 import com.grupo6.stockline.Service.ProveedorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -22,6 +22,32 @@ public class ProveedorController {
 
     private final ProveedorService proveedorService;
     private final ArticuloProveedorService articuloProveedorService;
+    private final ArticuloService articuloService;
+
+    @GetMapping("/crear")
+    public String mostrarFormularioProveedor(Model model) throws Exception {
+        List<Articulo> articulos = articuloService.findAll();
+        Proveedor proveedor = new Proveedor();
+        List<ArticuloProveedor> apList = new ArrayList<>();
+        apList.add(new ArticuloProveedor());
+        proveedor.setArticuloProveedor(apList);
+        model.addAttribute("proveedor", proveedor) ;
+        model.addAttribute("listaArticulos", articulos);
+        model.addAttribute("contenido", "proveedores/formProveedor :: contenido");
+        return "layouts/base";
+    }
+
+    @PostMapping("/crear")
+    public String procesarProveedor(@ModelAttribute Proveedor proveedor, RedirectAttributes redirectAttributes) throws Exception {
+        try {
+            proveedor.asociarArticuloProveedor();
+            proveedorService.save(proveedor);
+            redirectAttributes.addFlashAttribute("exito", "Proveedor creado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/proveedor/listado";
+    }
 
     @GetMapping("/listado")
     public String listarProveedores(Model model) throws Exception {

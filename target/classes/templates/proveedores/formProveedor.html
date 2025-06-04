@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<div th:fragment="contenido" class="max-w-4xl mx-auto">
+    <div class="bg-white p-6 rounded-xl shadow-xl">
+        <h1 class="text-3xl font-semibold text-gray-800 mb-8 border-b pb-4">Nuevo Proveedor</h1>
+        <form th:action="@{/proveedor/crear}" th:object="${proveedor}" method="post">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="nombreProveedor" class="block text-sm font-medium text-gray-700 mb-1">Nombre o Razón Social:</label>
+                    <input type="text" id="nombreProveedor" th:field="*{nombreProveedor}" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 placeholder-gray-400" required>
+                </div>
+                <div>
+                    <label for="mailProveedor" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico:</label>
+                    <input type="email" id="mailProveedor" th:field="*{mailProveedor}" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 placeholder-gray-400">
+                </div>
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4 border-t pt-6">Artículos Asociados</h2>
+            <p class="text-sm text-gray-600 mb-4">Todo proveedor debe asociarse al menos a un artículo.</p>
+
+            <div id="articulos-asociados-container" th:data-size="${#lists.size(proveedor.articuloProveedor)}">
+                <div th:each="ap, iterStat : *{articuloProveedor}" class="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50 articulo-asociado-block" th:data-index="${iterStat.index}">
+                    <input type="hidden" th:field="*{articuloProveedor[__${iterStat.index}__].id}" />
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-medium text-gray-600" th:text="'Artículo ' + (${iterStat.index} + 1)">Artículo</h3>
+                        <button type="button" th:if="${iterStat.index > 0}" class="bg-red-100 hover:bg-red-200 text-red-600 font-medium py-1 px-2 rounded-md shadow-sm text-xs transition-colors duration-150 ease-in-out quitar-articulo-btn">
+                            <i class="fas fa-times mr-1"></i>Quitar
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label th:for="'articuloId' + ${iterStat.index}" class="block text-sm font-medium text-gray-700 mb-1">Artículo:</label>
+                            <select th:id="'articuloId' + ${iterStat.index}" th:field="*{articuloProveedor[__${iterStat.index}__].articulo.id}" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 articulo-select" required>
+                                <option value="">-- Seleccionar Artículo --</option>
+                                <option th:each="art : ${listaArticulos}" th:value="${art.id}" th:text="${art.nombreArticulo}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label th:for="'demoraEntrega' + ${iterStat.index}" class="block text-sm font-medium text-gray-700 mb-1">Demora Entrega (días):</label>
+                            <input type="number" th:id="'demoraEntrega' + ${iterStat.index}" th:field="*{articuloProveedor[__${iterStat.index}__].demoraEntrega}" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 placeholder-gray-400" min="0" required>
+                        </div>
+                        <div>
+                            <label th:for="'precioArticulo' + ${iterStat.index}" class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario por este Proveedor ($):</label>
+                            <input type="number" step="0.01" th:id="'precioArticulo' + ${iterStat.index}" th:field="*{articuloProveedor[__${iterStat.index}__].precioArticulo}" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 placeholder-gray-400" min="0" required>
+                        </div>
+                        <div>
+                            <label th:for="'cargoPedido' + ${iterStat.index}" class="block text-sm font-medium text-gray-700 mb-1">Cargos por Pedido de este Proveedor ($):</label>
+                            <input type="number" step="0.01" th:id="'cargoPedido' + ${iterStat.index}" th:field="*{articuloProveedor[__${iterStat.index}__].cargoPedido}" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 placeholder-gray-400" min="0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="agregar-articulo-btn" class="btn-secondary mt-6">
+                <i class="fas fa-plus mr-2"></i>Agregar otro artículo
+            </button>
+
+            <div class="mt-10 pt-6 border-t flex justify-end space-x-3">
+                <a th:href="@{/proveedor/listado}" class="btn-secondary">Cancelar</a>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save mr-2"></i>Guardar Proveedor
+                </button>
+            </div>
+        </form>
+    </div>
+    <script th:src="@{/js/proveedores.js}" defer></script>
+</div>

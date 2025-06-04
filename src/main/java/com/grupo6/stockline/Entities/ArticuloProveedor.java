@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -12,9 +13,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ArticuloProveedor extends Base{
 
-    private Integer cargoPedido;
+    private BigDecimal cargoPedido;
     private Integer demoraEntrega;
-    private Integer precioArticulo;
+    private BigDecimal precioArticulo;
 
     @ManyToOne
     @JoinColumn(name = "articulo_id")
