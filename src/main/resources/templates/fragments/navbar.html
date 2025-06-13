@@ -1,0 +1,18 @@
+<nav class="bg-indigo-800 shadow-lg" th:fragment="navbar" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            <div class="flex items-center">
+                <img src="https://placehold.co/40x40/FFFFFF/4F46E5?text=SL" alt="Logo" class="h-10 w-10 rounded-full mr-3">
+                <span class="font-semibold text-xl text-white">StockLine MVP</span>
+            </div>
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-stretch space-x-1">
+                    <a th:href="@{/articulo/listado}" class="navbar-custom-item" th:classappend="${activeTab == 'articulos'} ? ' active'">Artículos</a>
+                    <a th:href="@{/proveedor/listado}" class="navbar-custom-item" th:classappend="${activeTab == 'proveedores'} ? ' active'">Proveedores</a>
+                    <a th:href="@{/ordenCompra/listado}" class="navbar-custom-item" th:classappend="${activeTab == 'ordenes'} ? ' active'">Órdenes de Compra</a>
+                    <a th:href="@{/venta/listado}" class="navbar-custom-item" th:classappend="${activeTab == 'ventas'} ? ' active'">Ventas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

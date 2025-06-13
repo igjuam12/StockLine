@@ -1,0 +1,72 @@
+<div th:fragment="contenido" xmlns:th="http://www.w3.org/1999/xhtml">
+    <section class="bg-white p-6 rounded-xl shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">Gestión de Articulos</h2>
+
+            <a th:href="@{/articulo/crear}" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Nuevo Articulo
+            </a>
+
+        </div>
+
+        <!-- Filtros -->
+        <div class="mb-4 flex flex-wrap gap-4">
+
+            <a th:href="@{/articulo/listado}" class="btn-secondary">
+                <i class="fas fa-list mr-2"></i> Ver Todos
+            </a>
+            <a th:href="@{/articulo/listadoReponer}" class="btn-secondary">
+                <i class="fas fa-boxes-packing mr-2"></i> Artículos a Reponer
+            </a>
+            <a th:href="@{/articulo/listadoFaltantes}" class="btn-secondary">
+                <i class="fas fa-triangle-exclamation mr-2"></i> Artículos Faltantes
+            </a>
+
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-center">
+                <thead class="bg-gray-100">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Modelo Inv.</th>
+                    <th>Prov. Pred.</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="articulo : ${articulos}"
+                    th:classappend="${articulo.fechaBaja != null} ? 'bg-gray-100 pointer-events-none opacity-50' : ''"
+                    class="text-center transition-colors">
+                    <td th:text="${articulo.id}" class="px-4 py-2"></td>
+                    <td th:text="${articulo.nombreArticulo}" class="px-4 py-2"></td>
+                    <td th:text="${articulo.descripcionArticulo}" class="px-4 py-2"></td>
+                    <td><span th:each="ap : ${articulo.articuloProveedor}" th:text="${ap.precioArticulo} + ' '"/></td>
+                    <td th:text="${articulo.stockActual}" class="px-4 py-2"></td>
+                    <td th:text="${articulo.modeloInventario}" class="px-4 py-2"></td>
+                    <td th:text="${articulo.proveedorPredeterminado?.nombreProveedor}" class="px-4 py-2"></td>
+
+                    <td class="px-4 py-2">
+                        <a th:href="@{/articulo/{id}/modificar(id=${articulo.id})}" class="action-icon action-icon-edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="#"
+                           th:attr="data-id=${articulo.id}, data-path='articulo'"
+                           onclick="abrirModal(this, event)"
+                           class="action-icon action-icon-delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                        <a th:href="@{/articulo/{id}/proveedores(id=${articulo.id})}" class="action-icon action-icon-details">
+                            <i class="fas fa-boxes-stacked fa-fw"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

@@ -39,4 +39,12 @@ public class Articulo extends Base{
 
     @Enumerated(EnumType.STRING)
     private ModeloInventario modeloInventario;
+
+    public void asociarDatosModeloArticulo() {
+        if (datosModeloInventario != null) {
+            for (DatosModeloInventario dmi : datosModeloInventario) {
+                dmi.setArticulo(this);
+            }
+        }
+    }
 }

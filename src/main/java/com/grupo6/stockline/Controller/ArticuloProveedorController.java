@@ -11,6 +11,5 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("articuloProveedor")
-public class ArticuloProveedorController extends BaseControllerImpl<ArticuloProveedor,
-        ArticuloProveedorServiceImpl>{
+public class ArticuloProveedorController{
 }

@@ -11,13 +11,11 @@ import java.util.List;
 @Repository
 public interface ArticuloRepository extends BaseRepository<Articulo,Long> {
 
-    @Query("SELECT a.id, a.nombreArticulo, a.stockActual, dmi.inventarioMaximo, dmi.loteOptimo, dmi.puntoPedido, dmi.stockSeguridad, p.nombreProveedor " +
-            "FROM Articulo a " +
+    @Query("SELECT a FROM Articulo a " +
             "JOIN a.datosModeloInventario dmi " +
             "LEFT JOIN a.proveedorPredeterminado p " +
-            "WHERE a.fechaBajaArticulo IS NULL " +
             "ORDER BY a.id")
-    List<DTOArticulo> listarArticulos();
+    List<Articulo> listarArticulos();
 
     @Query("SELECT a.id, a.nombreArticulo, a.stockActual, dmi.inventarioMaximo, dmi.loteOptimo, dmi.puntoPedido, dmi.stockSeguridad, p.nombreProveedor " +
             "FROM Articulo a " +
@@ -26,9 +24,5 @@ public interface ArticuloRepository extends BaseRepository<Articulo,Long> {
             "WHERE a.id = :articuloId AND a.fechaBaja IS NULL " +
             "ORDER BY a.id")
     DTOArticulo listarArticuloById(@Param("articuloId") Long articuloId);
-
-    @Query("SELECT a FROM Articulo a" +
-            "WHERE a.fechaBaja IS NULL")
-    List<Articulo> obtenerArticulos();
 
 }
