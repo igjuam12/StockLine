@@ -26,7 +26,7 @@
                     <td th:text="${proveedor.fechaAlta}" class="px-4 py-2"></td>
                     <td th:text="${proveedor.fechaBaja}" class="px-4 py-2"></td>
                     <td class="px-4 py-2">
-                        <a th:href="@{/proveedor/modificar/{id}(id=${proveedor.id})}" class="action-icon action-icon-edit">
+                        <a th:href="@{/proveedor/{id}/modificar(id=${proveedor.id})}" class="action-icon action-icon-edit">
                             <i class="fas fa-edit"></i>
                         </a>
                         <a href="#"

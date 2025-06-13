@@ -1,9 +1,6 @@
 package com.grupo6.stockline.Entities;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +20,10 @@ public class Base implements Serializable {
     private Long id;
     private LocalDate fechaAlta;
     private LocalDate fechaBaja;
+
+    @PrePersist
+    protected void onCreate() {
+        this.fechaAlta = LocalDate.now();
+    }
 
 }

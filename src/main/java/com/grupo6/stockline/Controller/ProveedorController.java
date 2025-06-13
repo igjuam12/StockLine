@@ -33,6 +33,7 @@ public class ProveedorController {
         proveedor.setArticuloProveedor(apList);
         model.addAttribute("proveedor", proveedor) ;
         model.addAttribute("listaArticulos", articulos);
+        model.addAttribute("isEditMode", false);
         model.addAttribute("contenido", "proveedores/formProveedor :: contenido");
         return "layouts/base";
     }
@@ -43,6 +44,26 @@ public class ProveedorController {
             proveedor.asociarArticuloProveedor();
             proveedorService.save(proveedor);
             redirectAttributes.addFlashAttribute("exito", "Proveedor creado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/proveedor/listado";
+    }
+
+    @GetMapping("/{id}/modificar")
+    public String mostrarFormularioModificar(@PathVariable("id") Long id, Model model) throws Exception {
+        Proveedor proveedor = proveedorService.findById(id);
+        model.addAttribute("proveedor", proveedor);
+        model.addAttribute("isEditMode", true);
+        model.addAttribute("contenido", "proveedores/formProveedor :: contenido");
+        return "layouts/base";
+    }
+
+    @PostMapping("/{id}/modificar")
+    public String modificarProveedor(@PathVariable Long id, @ModelAttribute Proveedor proveedor, RedirectAttributes redirectAttributes) throws Exception {
+        try {
+            proveedorService.update(id, proveedor);
+            redirectAttributes.addFlashAttribute("exito", "Proveedor modificado correctamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

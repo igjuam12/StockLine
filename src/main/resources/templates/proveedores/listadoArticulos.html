@@ -1,10 +1,16 @@
 <div th:fragment="contenido">
     <section class="bg-white p-6 rounded-xl shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0" th:text="'Listado artículos proveedor: ' + ${proveedor.nombreProveedor}"></h2>
-            <a th:href="@{/proveedor/listado}" class="btn-primary">
-                <i class="fas fa-arrow-left mr-2"></i>Volver
-            </a>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0" th:text="'Artículos asociados a: ' + ${proveedor.nombreProveedor}"></h2>
+
+            <div class="flex items-center gap-3">
+                <a th:href="@{/proveedor/listado}" class="btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver
+                </a>
+                <a th:href="@{/articulo-proveedor/agregar(proveedorId=${proveedor.id})}" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Añadir Asociación
+                </a>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-center">
@@ -15,17 +21,33 @@
                     <th class="px-4 py-2">Demora</th>
                     <th class="px-4 py-2">Cargo Pedido</th>
                     <th class="px-4 py-2">Predeterminado</th>
+                    <th class="px-4 py-2">Fecha Baja</th>
+                    <th class="px-4 py-2">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="articuloProveedor : ${articulosProveedor}">
+                <tr th:each="articuloProveedor : ${articulosProveedor}"
+                    th:classappend="${articuloProveedor.fechaBaja != null} ? 'bg-gray-100 pointer-events-none opacity-50' : ''"
+                    class="text-center transition-colors">
                     <td th:text="${articuloProveedor.articulo.nombreArticulo}"></td>
                     <td th:text="${articuloProveedor.precioArticulo}"></td>
-                    <td th:text="${articuloProveedor.demoraEntrega}"></td>
+                    <td th:text="${articuloProveedor.demoraEntrega} + ' días'"></td>
                     <td th:text="${articuloProveedor.cargoPedido}"></td>
+                    <td th:text="${articuloProveedor.fechaBaja}"></td>
                     <td>
                         <span th:text="${articuloProveedor.proveedor.id == articuloProveedor.articulo.proveedorPredeterminado.id} ? 'Sí' : 'No'"
                               th:classappend="${articuloProveedor.proveedor.id == articuloProveedor.articulo.proveedorPredeterminado.id} ? 'text-green-600 font-bold' : 'text-gray-500'"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/articulo-proveedor/{id}/modificar(id=${articuloProveedor.id})}" class="action-icon action-icon-edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="#"
+                           th:attr="data-id=${articuloProveedor.id}, data-path='articulo-proveedor', data-parametro='proveedorId=' + ${proveedor.id}"
+                           onclick="abrirModal(this, event)"
+                           class="action-icon action-icon-delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     </td>
                 </tr>
                 </tbody>

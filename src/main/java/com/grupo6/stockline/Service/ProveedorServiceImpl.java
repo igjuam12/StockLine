@@ -33,6 +33,15 @@ public class ProveedorServiceImpl extends BaseServiceImpl<Proveedor, Long> imple
     }
 
     @Override
+    public void update(Long id, Proveedor proveedor){
+        Proveedor proveedorExistente = proveedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
+        proveedorExistente.setNombreProveedor(proveedor.getNombreProveedor());
+        proveedorExistente.setMailProveedor(proveedor.getMailProveedor());
+        proveedorRepository.save(proveedorExistente);
+    }
+
+    @Override
     public void delete(Long id) throws Exception {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));

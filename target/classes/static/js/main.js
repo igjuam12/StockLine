@@ -14,9 +14,13 @@ function abrirModal(elemento, event) {
     event.preventDefault();
     const id = elemento.getAttribute("data-id");
     const path = elemento.getAttribute("data-path");
+    const parametroExtra = elemento.getAttribute("data-parametro");
+    let actionUrl = `/${path}/${id}/baja`;
+    if (parametroExtra) {
+        actionUrl += `?${parametroExtra}`;
+    }
     const form = document.getElementById("formBaja");
-    form.action = `/${path}/${id}/baja`;
-    console.log("Form action:", form.action);
+    form.action = actionUrl;
     document.getElementById("modalBaja").classList.remove("hidden");
 }
 
