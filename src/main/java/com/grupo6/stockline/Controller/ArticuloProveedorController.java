@@ -57,11 +57,12 @@ public class ArticuloProveedorController {
     @PostMapping("/{id}/modificar")
     public String modificarAsociacion(@PathVariable("id") Long id,
                                       @ModelAttribute("asociacion") ArticuloProveedor asociacionForm,
-                                      RedirectAttributes redirectAttributes) throws Exception {
+                                      @RequestParam("proveedorId") Long proveedorId,
+                                      RedirectAttributes redirectAttributes) {
         try {
             articuloProveedorService.update(id, asociacionForm);
             redirectAttributes.addFlashAttribute("exito", "Asociación modificada correctamente.");
-            return "redirect:/proveedor/" + asociacionForm.getProveedor().getId() + "/articulos";
+            return "redirect:/proveedor/" + proveedorId + "/articulos";
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al modificar la asociación: " + e.getMessage());

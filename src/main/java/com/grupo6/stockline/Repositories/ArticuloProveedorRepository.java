@@ -10,4 +10,6 @@ public interface ArticuloProveedorRepository extends BaseRepository<ArticuloProv
 
     List<ArticuloProveedor> findByProveedorId(Long proveedorId);
 
+    long countByArticuloIdAndFechaBajaIsNull(Long articuloId);
+
 }

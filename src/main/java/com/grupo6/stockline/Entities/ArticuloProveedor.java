@@ -13,9 +13,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ArticuloProveedor extends Base{
 
-    private BigDecimal cargoPedido;
+    private double cargoPedido;
     private Integer demoraEntrega;
-    private BigDecimal precioArticulo;
+    private double precioArticulo;
 
     @ManyToOne
     @JoinColumn(name = "articulo_id")

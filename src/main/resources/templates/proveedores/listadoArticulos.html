@@ -33,11 +33,11 @@
                     <td th:text="${articuloProveedor.precioArticulo}"></td>
                     <td th:text="${articuloProveedor.demoraEntrega} + ' días'"></td>
                     <td th:text="${articuloProveedor.cargoPedido}"></td>
-                    <td th:text="${articuloProveedor.fechaBaja}"></td>
                     <td>
                         <span th:text="${articuloProveedor.proveedor.id == articuloProveedor.articulo.proveedorPredeterminado.id} ? 'Sí' : 'No'"
                               th:classappend="${articuloProveedor.proveedor.id == articuloProveedor.articulo.proveedorPredeterminado.id} ? 'text-green-600 font-bold' : 'text-gray-500'"></span>
                     </td>
+                    <td th:text="${articuloProveedor.fechaBaja}"></td>
                     <td>
                         <a th:href="@{/articulo-proveedor/{id}/modificar(id=${articuloProveedor.id})}" class="action-icon action-icon-edit">
                             <i class="fas fa-edit"></i>

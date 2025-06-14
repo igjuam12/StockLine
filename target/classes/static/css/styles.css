@@ -89,4 +89,12 @@ body {
     color: currentColor;
 }
 
+.flash-message {
+    transition: opacity 0.5s ease-out;
+}
+
+.fade-out {
+    opacity: 0;
+}
+
 
