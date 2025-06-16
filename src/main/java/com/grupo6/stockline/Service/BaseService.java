@@ -8,6 +8,7 @@ import java.util.List;
 public interface BaseService<E extends Base, ID extends Long>{
 
     public List<E> findAll() throws Exception;
+    public List<E> findAllActive() throws Exception;
     public E findById(ID id) throws Exception;
     public void save(E entity) throws Exception;
     public void update(ID id, E entity) throws Exception;

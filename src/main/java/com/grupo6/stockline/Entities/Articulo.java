@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,6 +22,8 @@ public class Articulo extends Base {
     private LocalDate fechaModificacionArticulo;
     private String  nombreArticulo;
     private Integer stockActual;
+    private LocalDateTime fechaUltimaRevision;
+    private Integer tiempoRevision;
 
     @ManyToOne
     @JoinColumn(name = "proveedor_predeterminado_id")

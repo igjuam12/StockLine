@@ -22,6 +22,14 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Long> implement
         }
     }
 
+    public List<E> findAllActive() throws Exception {
+        try {
+            return baseRepository.findAllActive();
+        } catch (Exception e) {
+            throw new Exception("Error al obtener los datos: " + e.getMessage(), e);
+        }
+    }
+
     @Transactional
     public E findById(ID id) throws Exception {
         try {

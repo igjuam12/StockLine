@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import java.io.Serializable;
 
 @NoRepositoryBean
@@ -14,7 +16,10 @@ public interface BaseRepository<E extends Base, ID extends Serializable> extends
 
     @Modifying
     @Transactional
-    @Query("UPDATE #{#entityName} e SET e.fechaBaja = CURRENT_DATE WHERE e.id = :id AND e.fechaBaja IS NULL")
+    @Query("UPDATE #{#entityName} e SET e.fechaBaja = CURRENT_TIMESTAMP WHERE e.id = :id AND e.fechaBaja IS NULL")
     void darDeBajaPorId(ID id);
+
+    @Query("SELECT e FROM #{#entityName} e WHERE e.fechaBaja IS NULL")
+    List<E> findAllActive();
 
 }

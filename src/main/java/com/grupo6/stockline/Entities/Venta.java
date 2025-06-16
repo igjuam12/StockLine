@@ -3,7 +3,6 @@ package com.grupo6.stockline.Entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
