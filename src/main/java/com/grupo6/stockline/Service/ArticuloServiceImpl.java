@@ -1,23 +1,20 @@
 package com.grupo6.stockline.Service;
-import com.grupo6.stockline.DTOs.DTOArticulo;
-import com.grupo6.stockline.Entities.Articulo;
-import com.grupo6.stockline.Entities.DatosModeloInventario;
-import com.grupo6.stockline.Entities.DetalleOrdenCompra;
-import com.grupo6.stockline.Entities.Proveedor;
+import com.grupo6.stockline.Entities.*;
 import com.grupo6.stockline.Enum.EstadoOrdenCompra;
 import com.grupo6.stockline.Enum.ModeloInventario;
-import com.grupo6.stockline.Repositories.ArticuloRepository;
-import com.grupo6.stockline.Repositories.BaseRepository;
-import com.grupo6.stockline.Repositories.DetalleOrdenCompraRepository;
-import com.grupo6.stockline.Repositories.ProveedorRepository;
+import com.grupo6.stockline.Repositories.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static java.lang.Math.round;
+import static java.lang.Math.sqrt;
 
 
 @Service
@@ -29,6 +26,10 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
     DetalleOrdenCompraRepository detalleOrdenCompraRepository;
     @Autowired
     ProveedorRepository proveedorRepository;
+    @Autowired
+    ArticuloProveedorRepository articuloProveedorRepository;
+    @Autowired
+    DatosModeloInventarioRepository datosRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -44,6 +45,10 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             if (articuloRepository.existsById(articulo.getId())) {
                 throw new Exception("No se pudo crear el artículo: ya existe");
             }
+            articulo.setFechaAlta(LocalDateTime.now());
+
+            articulo.setStockActual(0);
+
             articuloRepository.save(articulo);
         }catch (Exception e){
             throw new Exception(e.getMessage());
@@ -56,9 +61,14 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             if (!articuloRepository.existsById(id)) {
                 throw new Exception("No se puede actualizar: entidad no encontrada con ID: " + id);
             }
+            // 4. Aquí, le asignas el ID al objeto nuevo que viene del formulario.
             articulo.setId(id);
+
+            calcularModeloInventario(articulo.getId());
+
+            // 5. ESTA LÍNEA ES LA FUENTE DEL ERROR.
             articuloRepository.save(articulo);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
@@ -92,8 +102,7 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
                 throw new IllegalStateException("No se puede dar de baja: Todavia hay unidades en Stock");
             }
 
-            articuloExistente.setFechaBaja(LocalDate.now());
-            save(articuloExistente);
+            articuloRepository.darDeBajaPorId(articuloExistente.getId());
 
         }catch (Exception e){
             throw new IllegalStateException(e.getMessage());
@@ -126,7 +135,8 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
                 for (DatosModeloInventario dmi : datosInventario) {
                     //Verifico que StockActual <= PP y sinOrdenes sea Verdadero
                     if (dmi.getFechaBaja() == null &&
-                            a.getStockActual() <= dmi.getPuntoPedido() && sinOrdenes) {
+                            a.getStockActual() <= dmi.getPuntoPedido() && sinOrdenes
+                            && a.getModeloInventario() == ModeloInventario.LoteFijo) {
                         listaArticulosAReponer.add(a);
                     }
                 }
@@ -172,18 +182,6 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             Proveedor proveedor = proveedorRepository.findById(idProveedor).
                     orElseThrow(() -> new IllegalArgumentException("No se pudo asignar el proveedor: No existe"));
 
-            List<DetalleOrdenCompra> ordenes = articulo.getDetalleOrdenCompra();
-            Boolean tieneOrdenes = false;
-            for(DetalleOrdenCompra dOC: ordenes)
-            if (dOC.getOrdenCompra().getEstadoOrdenCompra() == EstadoOrdenCompra.Pendiente
-                    || dOC.getOrdenCompra().getEstadoOrdenCompra() == EstadoOrdenCompra.Enviada) {
-                tieneOrdenes = true;
-            }
-            if(tieneOrdenes){
-                throw new IllegalStateException("No se puede asginar el consultor: El Articulo tiene una orden de compra " +
-                        "Pendiente/Enviada");
-            }
-
             articulo.setProveedorPredeterminado(proveedor);
             articuloRepository.save(articulo);
 
@@ -193,8 +191,76 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
     }
 
     @Override
-    public void calcularModeloInventario(Articulo articulo) throws Exception{
+    public Double calcularCGI(Long id) throws Exception{
         try {
+
+            //Busco al articulo
+            Articulo articulo = articuloRepository.findById(id).orElseThrow(() ->
+                    new IllegalArgumentException("No se pudo calcular el CGI: Articulo no Encontrado"));
+
+            //Busco el ArticuloProveedor del ProveedorPredeterminado
+            ArticuloProveedor articuloProveedor = articuloProveedorRepository.findByProveedorAndArticulo(articulo.
+                    getProveedorPredeterminado().getId(), id);
+
+            //Buscos los DatosModeloInventario del modelo que no este dado de baja
+            DatosModeloInventario datos = null;
+            List<DatosModeloInventario> listaDatos = articulo.getDatosModeloInventario();
+            for (DatosModeloInventario dmi : listaDatos) {
+                if (dmi.getFechaBaja() == null) {
+                    datos = dmi;
+                }
+            }
+
+            Integer demandaArticulo = articulo.getDemandaArticulo();
+            Integer costoAlmacenamiento = articulo.getCostoAlmacenamiento();
+
+            if (articuloProveedor.getCostoCompra() == null || articuloProveedor.getCostoPedido() == null || datos.getLoteOptimo() == null) {
+                throw new IllegalStateException("No se puede calcular el CGI: datos incompletos");
+            }
+
+            Integer costoArticulo = articuloProveedor.getCostoCompra();
+            Integer costoPedido = articuloProveedor.getCostoPedido();
+            Integer loteOptimo = datos.getLoteOptimo();
+
+            //CGI = D*C + Cp*D/Q + Ca*Q/2
+            Double cgi = (double) ((demandaArticulo*costoArticulo) + ((costoPedido*demandaArticulo)/loteOptimo) +
+                                ((costoAlmacenamiento*loteOptimo)/2));
+
+            System.out.println("CGI: " + cgi);
+
+            return cgi;
+
+        }catch (Exception e){
+            throw new IllegalStateException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void realizarAjuste(Long id, Integer cantAjuste) throws Exception {
+        try {
+            Articulo articulo = articuloRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("No se pudo realizar el ajuste: Artículo no encontrado con ID: " + id));
+
+            if (articulo.getStockActual() < cantAjuste) {
+                throw new IllegalStateException("No se puede realizar el ajuste: El stock actual ("
+                        + articulo.getStockActual() + ") es menor que la cantidad a reducir (" + cantAjuste + ").");
+            }
+
+            articulo.setStockActual(articulo.getStockActual() - cantAjuste);
+            articuloRepository.save(articulo);
+
+        }catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @Override
+    //Calcular los datos del modelo para cada proveedor del articulo o mostrarlo para el predeterminado
+    public void calcularModeloInventario(Long id) throws Exception{
+        try {
+            Articulo articulo = articuloRepository.findById(id).orElseThrow(() ->
+                    new IllegalArgumentException("No se pudo calcular el ModeloInventario: Articulo no Encontrado"));
+
             if(articulo.getModeloInventario() == ModeloInventario.LoteFijo){
                 modeloLoteFijo(articulo);
             } else if (articulo.getModeloInventario() == ModeloInventario.IntervaloFijo) {
@@ -205,36 +271,94 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
         }
     }
 
-    public static void modeloLoteFijo(Articulo articulo) throws Exception{
-        List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
+    public void modeloLoteFijo(Articulo articulo) throws Exception{
+        try{
+            List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
 
-        //Me traigo el ultimo DatosModelo Inventario y lo doy de baja
-        for (DatosModeloInventario d: datosLista){
-            if(d.getFechaBaja() == null){
-                d.setFechaBaja(LocalDate.now());
+            //Me traigo el ultimo DatosModelo Inventario y lo doy de baja
+            for (DatosModeloInventario d: datosLista){
+                if(d.getFechaBaja() == null){
+                    d.setFechaBaja(LocalDateTime.now());
+                    datosRepository.save(d);
+                }
             }
+
+
+            ArticuloProveedor articuloProveedor = articuloProveedorRepository.findByProveedorAndArticulo(articulo.getProveedorPredeterminado().getId(),
+                    articulo.getId());
+
+
+            DatosModeloInventario datosNuevo = new DatosModeloInventario();
+
+
+            //Q = sqrt(2*D*Cp/Ca)
+            Integer loteOptimo = Math.toIntExact(round((sqrt(((2 * articulo.getDemandaArticulo()
+                    * articuloProveedor.getCostoPedido()) / (articulo.getCostoAlmacenamiento()))))));
+
+            //SS = z*de
+            Integer stockSeguridad = Math.toIntExact(round((1.64 * sqrt(5 * articuloProveedor.getDemoraEntrega()))));
+
+            //PP
+            Integer puntoPedido = ((articulo.getDemandaArticulo()*articuloProveedor.getDemoraEntrega())/360)
+                    + stockSeguridad;
+
+
+            datosNuevo.setLoteOptimo(loteOptimo);
+            datosNuevo.setPuntoPedido(puntoPedido);
+            datosNuevo.setStockSeguridad(stockSeguridad);
+            datosNuevo.setArticulo(articulo);
+            datosNuevo.setModeloInventario(articulo.getModeloInventario());
+
+
+            datosNuevo.setFechaAlta(LocalDateTime.now());
+            datosLista.add(datosNuevo);
+            articulo.setDatosModeloInventario(datosLista);
+            datosRepository.save(datosNuevo);
+            articuloRepository.save(articulo);
+
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
         }
-
-        DatosModeloInventario datosNuevo = new DatosModeloInventario();
-
-        Integer loteOptimo = 0;
-        Integer puntoPedido = 0;
-        Integer stockSeguridad = 0;
-
-        datosNuevo.setLoteOptimo(loteOptimo);
-        datosNuevo.setPuntoPedido(puntoPedido);
-        datosNuevo.setStockSeguridad(stockSeguridad);
-        datosNuevo.setFechaAlta(LocalDate.now());
-
-        datosLista.add(datosNuevo);
-
-        articulo.setDatosModeloInventario(datosLista);
-
-
-
     }
 
-    public static void modeloIntervaloFijo(Articulo articulo) throws Exception{}
+    public void modeloIntervaloFijo(Articulo articulo) throws Exception{
+        try {
+            List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
+
+            //Me traigo el ultimo DatosModelo Inventario y lo doy de baja
+            for (DatosModeloInventario d : datosLista) {
+                if (d.getFechaBaja() == null) {
+                    d.setFechaBaja(LocalDateTime.now());
+                    datosRepository.save(d);
+                }
+            }
+
+            ArticuloProveedor articuloProveedor = articuloProveedorRepository.findByProveedorAndArticulo(articulo.getProveedorPredeterminado().getId(),
+                    articulo.getId());
 
 
+            DatosModeloInventario datosNuevo = new DatosModeloInventario();
+
+            Integer stockSeguridad = Math.toIntExact(round(1.64 * 5 *
+                    sqrt((articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()))));
+            Integer loteOptimo = round((articulo.getDemandaArticulo()/360)*
+                    (articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()) + stockSeguridad - articulo.getStockActual());
+
+            datosNuevo.setStockSeguridad(stockSeguridad);
+            datosNuevo.setLoteOptimo(loteOptimo);
+            datosNuevo.setArticulo(articulo);
+            datosNuevo.setModeloInventario(articulo.getModeloInventario());
+
+            datosNuevo.setFechaAlta(LocalDateTime.now());
+            datosLista.add(datosNuevo);
+            articulo.setDatosModeloInventario(datosLista);
+
+
+            datosRepository.save(datosNuevo);
+
+            articuloRepository.save(articulo);
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+    }
 }

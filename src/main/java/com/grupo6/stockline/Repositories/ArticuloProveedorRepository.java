@@ -1,6 +1,7 @@
 package com.grupo6.stockline.Repositories;
 
 import com.grupo6.stockline.Entities.ArticuloProveedor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -8,6 +9,11 @@ import java.util.List;
 
 @Repository
 public interface ArticuloProveedorRepository extends BaseRepository<ArticuloProveedor,Long>{
+
+    @Query("SELECT ap FROM ArticuloProveedor ap WHERE ap.proveedor.id = :proveedorId AND ap.articulo.id = :articuloId")
+    ArticuloProveedor findByProveedorAndArticulo(@Param("proveedorId") Long proveedorId, @Param("articuloId") Long articuloId);
+
+
 
     List<ArticuloProveedor> findByArticuloId(Long id);
 }

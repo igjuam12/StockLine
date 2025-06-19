@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+<div th:fragment="contenidoCGI">
+  <h3 class="text-lg font-semibold mb-4">Información del Artículo</h3>
+
+  <!-- Mostrar error si existe -->
+  <div th:if="${errorCGI}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <strong>Error:</strong> <span th:text="${errorCGI}"></span>
+  </div>
+
+  <!-- Solo mostrar datos si no hay error -->
+  <div th:if="${errorCGI == null}">
+    <p><strong>Nombre:</strong> <span th:text="${nombre}"></span></p>
+    <p><strong>CGI:</strong> <span th:text="${cgi}"></span></p>
+  </div>
+
+  <div class="mt-4 text-right">
+    <button onclick="cerrarModalCGI()" class="btn-secondary">Cerrar</button>
+  </div>
+</div>
+</body>
+</html>

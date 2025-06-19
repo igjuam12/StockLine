@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrdenCompra extends Base{
 
-    private LocalDate fechaModificacionOrdenCompra;
+    private LocalDateTime fechaModificacionOrdenCompra;
 
 
     @Enumerated(EnumType.STRING)

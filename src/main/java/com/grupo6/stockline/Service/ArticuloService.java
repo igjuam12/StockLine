@@ -12,6 +12,8 @@ public interface ArticuloService extends BaseService<Articulo, Long>{
     public List<Articulo> listarArticulosReponer() throws Exception;
     public List<Articulo> listarArticulosFaltantes() throws Exception;
     public void asignarProveedorPredeterminado(Articulo articulo, Long idProveedor) throws Exception;
-    public void calcularModeloInventario(Articulo articulo) throws Exception;
+    public Double calcularCGI(Long id) throws Exception;
+    public void realizarAjuste(Long id, Integer cantidadAjuste) throws Exception;
+    public void calcularModeloInventario(Long id) throws Exception;
 
 }

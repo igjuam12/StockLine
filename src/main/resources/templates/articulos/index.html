@@ -2,16 +2,13 @@
     <section class="bg-white p-6 rounded-xl shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">Gestión de Articulos</h2>
-
             <a th:href="@{/articulo/crear}" class="btn-primary">
                 <i class="fas fa-plus mr-2"></i>Nuevo Articulo
             </a>
-
         </div>
 
         <!-- Filtros -->
         <div class="mb-4 flex flex-wrap gap-4">
-
             <a th:href="@{/articulo/listado}" class="btn-secondary">
                 <i class="fas fa-list mr-2"></i> Ver Todos
             </a>
@@ -21,7 +18,6 @@
             <a th:href="@{/articulo/listadoFaltantes}" class="btn-secondary">
                 <i class="fas fa-triangle-exclamation mr-2"></i> Artículos Faltantes
             </a>
-
         </div>
 
         <div class="overflow-x-auto">
@@ -45,12 +41,11 @@
                     <td th:text="${articulo.id}" class="px-4 py-2"></td>
                     <td th:text="${articulo.nombreArticulo}" class="px-4 py-2"></td>
                     <td th:text="${articulo.descripcionArticulo}" class="px-4 py-2"></td>
-                    <td><span th:each="ap : ${articulo.articuloProveedor}" th:text="${ap.precioArticulo} + ' '"/></td>
+                    <td th:text="${articulo.precioVenta}" class="px-4 py-2"></td>
                     <td th:text="${articulo.stockActual}" class="px-4 py-2"></td>
                     <td th:text="${articulo.modeloInventario}" class="px-4 py-2"></td>
                     <td th:text="${articulo.proveedorPredeterminado?.nombreProveedor}" class="px-4 py-2"></td>
-
-                    <td class="px-4 py-2">
+                    <td class="px-4 py-2 flex justify-center gap-2">
                         <a th:href="@{/articulo/{id}/modificar(id=${articulo.id})}" class="action-icon action-icon-edit">
                             <i class="fas fa-edit"></i>
                         </a>
@@ -63,10 +58,44 @@
                         <a th:href="@{/articulo/{id}/proveedores(id=${articulo.id})}" class="action-icon action-icon-details">
                             <i class="fas fa-boxes-stacked fa-fw"></i>
                         </a>
+                        <!-- Botón Ver CGI -->
+                        <a th:href="@{/articulo/{id}/CGI/popup(id=${articulo.id})}"
+                           onclick="event.preventDefault(); abrirModalCGI(this.getAttribute('href'))"
+                           class="action-icon text-blue-600 hover:text-blue-800" title="Ver CGI">
+                            <i class="fas fa-chart-line"></i>
+                        </a>
+                        <!-- Botón Ajuste Stock -->
+                        <button th:onclick="'abrirModalAjuste(' + ${articulo.id} + ')'"
+                                class="action-icon text-yellow-600 hover:text-yellow-800" title="Ajustar Stock">
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </section>
+
+    <!-- Modal CGI -->
+    <div id="cgiModal" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 shadow-xl w-[28rem]" id="cgiModalContent"></div>
+    </div>
+
+    <!-- Modal Ajuste Stock -->
+    <div id="ajusteStockModal" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 shadow-xl w-96">
+            <h3 class="text-xl font-semibold mb-4">Ajustar Stock</h3>
+            <form id="ajusteStockForm" method="post">
+                <input type="hidden" name="id" id="inputArticuloId">
+                <label for="inputCantidad">Cantidad a descontar:</label>
+                <input type="number" id="inputCantidad" name="cantidad" min="1" required>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalAjuste()" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Aceptar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:src="@{/js/articulos.js}"></script>
 </div>

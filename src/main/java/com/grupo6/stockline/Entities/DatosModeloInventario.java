@@ -18,7 +18,6 @@ public class DatosModeloInventario extends Base{
     private Integer stockSeguridad;
 
 
-
     @ManyToOne
     @JoinColumn(name = "articulo_id")
     private Articulo articulo;

@@ -102,3 +102,65 @@ document.addEventListener('DOMContentLoaded', function () {
         modeloIndex = updatedBlocks.length;
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modeloInventarioSelect = document.getElementById('modeloInventario');
+    const tiempoRevisionContainer = document.getElementById('tiempoRevisionContainer');
+    const tiempoRevisionInput = document.getElementById('tiempoRevision');
+
+    function toggleTiempoRevisionInput() {
+        // Asegúrate de que 'intervaloFijo' coincida exactamente con el valor en tu <option>
+        if (modeloInventarioSelect.value === 'IntervaloFijo') {
+            tiempoRevisionContainer.style.display = 'block'; // O 'flex', 'grid' según tu CSS
+            tiempoRevisionInput.setAttribute('required', 'required'); // Hace el campo requerido
+        } else {
+            tiempoRevisionContainer.style.display = 'none';
+            tiempoRevisionInput.removeAttribute('required'); // Remueve el requisito
+            tiempoRevisionInput.value = ''; // Limpia el valor cuando se oculta
+        }
+    }
+
+    // Escuchar cambios en el select de Modelo de Inventario
+    modeloInventarioSelect.addEventListener('change', toggleTiempoRevisionInput);
+
+    // Ejecutar la función al cargar la página para manejar el estado inicial
+    // (útil en modo edición si ya hay un modelo seleccionado)
+    toggleTiempoRevisionInput();
+});
+
+function abrirModalCGI(url) {
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error al cargar la vista CGI.");
+      }
+      return response.text();
+    })
+    .then(html => {
+      document.getElementById("cgiModalContent").innerHTML = html;
+      document.getElementById("cgiModal").classList.remove("hidden");
+    })
+    .catch(error => {
+      alert("Error: " + error.message);
+    });
+}
+
+
+function cerrarModalCGI() {
+    document.getElementById("cgiModal").classList.add("hidden");
+}
+
+// --- Funciones para el Modal de Ajuste de Stock ---
+
+function abrirModalAjuste(id) {
+    const form = document.getElementById('ajusteStockForm');
+    form.setAttribute('action', `/articulo/${id}/ajustarStock`);
+    document.getElementById('inputArticuloId').value = id;
+    document.getElementById('inputCantidad').value = '';
+    document.getElementById('ajusteStockModal').classList.remove('hidden');
+}
+
+
+function cerrarModalAjuste() {
+    document.getElementById('ajusteStockModal').classList.add('hidden');
+}

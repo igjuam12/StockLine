@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ArticuloProveedor extends Base{
 
-    private Integer cargoPedido;
+    private Integer costoCompra;
+    private Integer costoPedido;
     private Integer demoraEntrega;
-    private Integer precioArticulo;
 
     @ManyToOne
     @JoinColumn(name = "articulo_id")

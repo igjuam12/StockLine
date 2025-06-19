@@ -76,7 +76,10 @@ public class ArticuloController{
     public String modficarArticulo(@PathVariable Long id, @ModelAttribute Articulo articulo) throws Exception{
         try {
             Articulo articuloExistente = articuloService.findById(id);
+
             articulo.setProveedorPredeterminado(articuloExistente.getProveedorPredeterminado());
+            articulo.setStockActual(articuloExistente.getStockActual());
+            articulo.setFechaAlta(articuloExistente.getFechaAlta());
 
             articuloService.update(id, articulo);
         }catch (Exception e){
@@ -143,5 +146,42 @@ public class ArticuloController{
         }
         return "redirect:/articulo/" + idArticulo + "/proveedores";
     }
+
+    @GetMapping("/{idArticulo}/CGI/popup")
+    public String mostrarPopupCGI(@PathVariable Long idArticulo, Model model) {
+        try {
+            Articulo articulo = articuloService.findById(idArticulo);
+            Double cgi = articuloService.calcularCGI(idArticulo);
+
+            model.addAttribute("nombre", articulo.getNombreArticulo());
+            model.addAttribute("cgi", cgi);
+
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorCGI", e.getMessage());
+        } catch (Exception e) {
+            model.addAttribute("errorCGI", "Ocurrió un error inesperado al calcular el CGI.");
+        }
+
+        return "articulos/cgiModal :: contenidoCGI";
+    }
+
+    @GetMapping("/{id}/ModeloInventario/popup")
+    public String calcularModeloInventario(@PathVariable Long id, Model model){
+        try {
+            Articulo articulo = articuloService.findById(id);
+
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+        return "articulos/cgiModal :: contenidoCGI";
+    }
+
+    @PostMapping("/{id}/ajustarStock")
+    public String ajustarStock(@PathVariable Long id, @RequestParam("cantidad") Integer cantidad) throws Exception {
+        articuloService.realizarAjuste(id, cantidad);
+        return "redirect:/articulo/listado";
+    }
+
+
 
 }

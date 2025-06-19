@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -14,8 +16,9 @@ import java.util.List;
 public class Articulo extends Base{
 
     private Integer costoAlmacenamiento;
-    private Integer costoCompra;
-    private Integer costoPedido;
+    private Integer precioVenta;
+    private Integer tiempoRevision;
+    private LocalDateTime ultimaFechaRevision;
     private Integer demandaArticulo;
     private String  descripcionArticulo;
     private String  nombreArticulo;
