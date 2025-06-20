@@ -17,9 +17,9 @@
                 <thead class="bg-gray-100">
                 <tr>
                     <th class="px-4 py-2">Artículo</th>
-                    <th class="px-4 py-2">Precio</th>
+                    <th class="px-4 py-2">Costo Compra</th>
                     <th class="px-4 py-2">Demora</th>
-                    <th class="px-4 py-2">Cargo Pedido</th>
+                    <th class="px-4 py-2">Costo Pedido</th>
                     <th class="px-4 py-2">Predeterminado</th>
                     <th class="px-4 py-2">Fecha Baja</th>
                     <th class="px-4 py-2">Acciones</th>
@@ -30,9 +30,9 @@
                     th:classappend="${articuloProveedor.fechaBaja != null} ? 'bg-gray-100 pointer-events-none opacity-50' : ''"
                     class="text-center transition-colors">
                     <td th:text="${articuloProveedor.articulo.nombreArticulo}"></td>
-                    <td th:text="${articuloProveedor.precioArticulo}"></td>
+                    <td th:text="${articuloProveedor.costoCompra}"></td>
                     <td th:text="${articuloProveedor.demoraEntrega} + ' días'"></td>
-                    <td th:text="${articuloProveedor.cargoPedido}"></td>
+                    <td th:text="${articuloProveedor.costoPedido}"></td>
                     <td>
                         <span th:text="${articuloProveedor.proveedor.id == articuloProveedor.articulo.proveedorPredeterminado.id} ? 'Sí' : 'No'"
                               th:classappend="${articuloProveedor.proveedor.id == articuloProveedor.articulo.proveedorPredeterminado.id} ? 'text-green-600 font-bold' : 'text-gray-500'"></span>

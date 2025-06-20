@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +22,8 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
     ArticuloProveedorRepository articuloProveedorRepository;
     @Autowired
     DetalleOrdenCompraRepository detalleOrdenCompraRepository;
+    @Autowired
+    ArticuloService articuloService;
     @PersistenceContext
     private EntityManager entityManager;
     public ArticuloProveedorServiceImpl(BaseRepository<ArticuloProveedor, Long> baseRepository,
@@ -34,12 +37,19 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
     }
 
     @Override
-    public void update(Long id, ArticuloProveedor articuloProveedor){
+    public List<ArticuloProveedor> obtenerProveedoresPorArticulo(Long articuloId) {
+        return articuloProveedorRepository.findByArticuloId(articuloId);
+    }
+
+    @Override
+    public void update(Long id, ArticuloProveedor articuloProveedor) throws Exception {
         ArticuloProveedor articuloProveedorExistente = articuloProveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Asociacion no encontrada"));
-        articuloProveedorExistente.setCargoPedido(articuloProveedor.getCargoPedido());
+        articuloProveedorExistente.setCostoPedido(articuloProveedor.getCostoPedido());
         articuloProveedorExistente.setDemoraEntrega(articuloProveedor.getDemoraEntrega());
-        articuloProveedorExistente.setPrecioArticulo(articuloProveedor.getPrecioArticulo());
+        articuloProveedorExistente.setCostoCompra(articuloProveedor.getCostoCompra());
+        articuloService.calcularModeloInventario(articuloProveedor.getArticulo().getId());
+
         articuloProveedorRepository.save(articuloProveedorExistente);
     }
 
@@ -55,7 +65,7 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
                 articuloAsociado.getProveedorPredeterminado().getId().equals(asociacion.getProveedor().getId())) {
             throw new IllegalStateException("No se puede dar de baja: el proveedor es el predeterminado para este artículo. Por favor, asigne otro proveedor predeterminado primero.");
         }
-        List<EstadoOrdenCompra> estadosActivos = List.of(EstadoOrdenCompra.Pendiente, EstadoOrdenCompra.Enviada);
+        List<EstadoOrdenCompra> estadosActivos = List.of(EstadoOrdenCompra.PENDIENTE, EstadoOrdenCompra.ENVIADA);
         boolean tieneOCsActivas = detalleOrdenCompraRepository.existsByArticuloIdAndOrdenCompraProveedorIdAndOrdenCompraEstadoOrdenCompraIn(
                 asociacion.getArticulo().getId(),
                 asociacion.getProveedor().getId(),
@@ -68,7 +78,7 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
         if (countAsociacionesActivas <= 1) {
             throw new IllegalStateException("No se puede dar de baja: el artículo no puede quedar sin proveedores.");
         }
-        asociacion.setFechaBaja(LocalDate.now());
+        asociacion.setFechaBaja(LocalDateTime.now());
         articuloProveedorRepository.save(asociacion);
     }
 

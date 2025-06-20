@@ -10,7 +10,7 @@ import lombok.*;
 public class DetalleVenta extends Base{
 
     private Integer cantidad;
-    private Integer subTotal;
+    private double subTotal;
 
     @ManyToOne
     @JoinColumn(name = "venta_id")

@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface ArticuloProveedorService extends BaseService<ArticuloProveedor, Long>{
 
-    public List<ArticuloProveedor> obtenerArticulosPorProveedor(Long proveedorId);
+    List<ArticuloProveedor> obtenerArticulosPorProveedor(Long proveedorId);
+    List<ArticuloProveedor> obtenerProveedoresPorArticulo(Long articuloId);
 
 }

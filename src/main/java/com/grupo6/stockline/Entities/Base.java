@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
@@ -18,12 +19,12 @@ public class Base implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate fechaAlta;
-    private LocalDate fechaBaja;
+    private LocalDateTime fechaAlta;
+    private LocalDateTime fechaBaja;
 
     @PrePersist
     protected void onCreate() {
-        this.fechaAlta = LocalDate.now();
+        this.fechaAlta = LocalDateTime.now();
     }
 
 }

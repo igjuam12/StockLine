@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Venta extends Base{
 
-    private Integer   totalVenta;
+    private double totalVenta;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
-    private List<DetalleVenta> detalleVenta;
+    private List<DetalleVenta> detalleVenta = new ArrayList<>();
 }

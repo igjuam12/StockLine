@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,13 +15,13 @@ import java.util.List;
 public class Articulo extends Base {
 
     private Integer costoAlmacenamiento;
-    private Integer costoCompra;
-    private Integer costoPedido;
     private Integer demandaArticulo;
     private String  descripcionArticulo;
-    private LocalDate fechaModificacionArticulo;
     private String  nombreArticulo;
     private Integer stockActual;
+    private double precioVenta;
+    private LocalDateTime fechaUltimaRevision;
+    private Integer tiempoRevision;
 
     @ManyToOne
     @JoinColumn(name = "proveedor_predeterminado_id")
@@ -40,4 +41,13 @@ public class Articulo extends Base {
 
     @Enumerated(EnumType.STRING)
     private ModeloInventario modeloInventario;
+
+    public void asociarDatosModeloArticulo() {
+        if (datosModeloInventario != null) {
+            for (DatosModeloInventario dmi : datosModeloInventario) {
+                dmi.setArticulo(this);
+            }
+        }
+    }
+
 }

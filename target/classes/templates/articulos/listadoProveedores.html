@@ -1,0 +1,47 @@
+<div th:fragment="contenido" xmlns:th="http://www.w3.org/1999/xhtml">
+    <section class="bg-white p-6 rounded-xl shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0"
+                th:text="'Listado de proveedores  por articulo: ' + ${articulo.nombreArticulo}"></h2>
+            <a th:href="@{/articulo/listado}" class="btn-primary">
+                <i class="fas fa-arrow-left mr-2"></i>Volver
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-center">
+                <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2">Id</th>
+                    <th class="px-4 py-2">Nombre</th>
+                    <th class="px-4 py-2">Precio</th>
+                    <th class="px-4 py-2">Demora</th>
+                    <th class="px-4 py-2">Cargo Pedido</th>
+                    <th class="px-4 py-2">Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="articuloProveedor : ${articuloProveedores}">
+                    <td th:text="${articuloProveedor.articulo.id}"></td>
+                    <td th:text="${articuloProveedor.proveedor.nombreProveedor}"></td>
+                    <td th:text="${articuloProveedor.costoCompra}"></td>
+                    <td th:text="${articuloProveedor.demoraEntrega}"></td>
+                    <td th:text="${articuloProveedor.costoPedido}"></td>
+                    <td>
+                        <span th:if="${articulo.proveedorPredeterminado != null
+                                      and articulo.proveedorPredeterminado.id == articuloProveedor.proveedor.id}">
+                            ✔️ Predeterminado
+                        </span>
+                        <form th:if="${articulo.proveedorPredeterminado == null
+                                      or articulo.proveedorPredeterminado.id != articuloProveedor.proveedor.id}"
+                              th:action="@{'/articulo/' + ${articulo.id} + '/asignar-proveedor'}"
+                              method="post">
+                            <input type="hidden" name="idProveedor" th:value="${articuloProveedor.proveedor.id}" />
+                            <button type="submit" class="btn-secondary">Asignar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
