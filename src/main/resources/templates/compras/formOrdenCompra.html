@@ -36,8 +36,9 @@
                                         th:value="${art.id}"
                                         th:attr="data-proveedor=${art.proveedorPredeterminado != null ? art.proveedorPredeterminado.id : ''},
                                                  data-stock=${art.stockActual},
-                                                 data-lote=${#lists.isEmpty(art.datosModeloInventario) ? 0 : art.datosModeloInventario[0].loteOptimo},
-                                                 data-max=${#lists.isEmpty(art.datosModeloInventario) ? 0 : art.datosModeloInventario[0].inventarioMaximo}"
+                                                 data-lote=${#lists.isEmpty(art.datosModeloInventario.?[fechaBaja == null]) ? 0 : art.datosModeloInventario.?[fechaBaja == null][0].loteOptimo},
+                                                 data-max=${#lists.isEmpty(art.datosModeloInventario.?[fechaBaja == null]) ? 0 : art.datosModeloInventario.?[fechaBaja == null][0].inventarioMaximo},
+                                                 data-modelo=${art.modeloInventario}"
                                         th:text="${art.nombreArticulo + ' | Stock actual: ' + art.stockActual}"
                                         th:selected="${ordenCompra.detalleOrdenCompra != null and !ordenCompra.detalleOrdenCompra.isEmpty() and ordenCompra.detalleOrdenCompra[0].articulo != null and ordenCompra.detalleOrdenCompra[0].articulo.id == art.id}"></option>
                             </select>

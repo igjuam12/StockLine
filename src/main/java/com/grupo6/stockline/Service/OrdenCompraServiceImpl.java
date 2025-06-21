@@ -10,11 +10,13 @@ import com.grupo6.stockline.Enum.ModeloInventario;
 import com.grupo6.stockline.Repositories.ArticuloRepository;
 import com.grupo6.stockline.Repositories.OrdenCompraRepository;
 import com.grupo6.stockline.Repositories.ProveedorRepository;
+import com.grupo6.stockline.Service.DatosModeloInventarioService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +27,17 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
     private final OrdenCompraRepository ordenCompraRepository;
     private final ArticuloRepository articuloRepository; // Necesario para buscar artículos
     private final ProveedorRepository proveedorRepository; // Necesario para buscar proveedores
+    private final DatosModeloInventarioService datosModeloInventarioService;
 
     public OrdenCompraServiceImpl(OrdenCompraRepository ordenCompraRepository,
                                   ArticuloRepository articuloRepository,
-                                  ProveedorRepository proveedorRepository) {
+                                  ProveedorRepository proveedorRepository,
+                                  DatosModeloInventarioService datosModeloInventarioService) {
         super(ordenCompraRepository);
         this.ordenCompraRepository = ordenCompraRepository;
         this.articuloRepository = articuloRepository;
         this.proveedorRepository = proveedorRepository;
+        this.datosModeloInventarioService = datosModeloInventarioService;
     }
 
     @Override
@@ -73,9 +78,9 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
                     throw new Exception("La cantidad solicitada debe ser mayor a cero");
                 }
 
-                if (articulo.getDatosModeloInventario() != null
-                        && !articulo.getDatosModeloInventario().isEmpty()) {
-                    Integer inventarioMaximo = articulo.getDatosModeloInventario().get(0).getInventarioMaximo();
+                DatosModeloInventario datosActivos = datosModeloInventarioService.obtenerDatosModeloInventarioActivo(articulo);
+                if (datosActivos != null) {
+                    Integer inventarioMaximo = datosActivos.getInventarioMaximo();
                     Integer stockActual = articulo.getStockActual();
                     if (inventarioMaximo != null && stockActual != null
                             && stockActual + cantidadSolicitada > inventarioMaximo) {
@@ -84,7 +89,7 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
                     }
 
                     if (articulo.getModeloInventario() == ModeloInventario.LoteFijo) {
-                        Integer puntoPedido = articulo.getDatosModeloInventario().get(0).getPuntoPedido();
+                        Integer puntoPedido = datosActivos.getPuntoPedido();
                         if (puntoPedido != null && stockActual != null
                                 && stockActual + cantidadSolicitada <= puntoPedido) {
                             throw new Exception("La cantidad solicitada no supera el Punto de Pedido de "
@@ -129,8 +134,9 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
             if (nuevaCantidad != null && ordenExistente.getDetalleOrdenCompra() != null && !ordenExistente.getDetalleOrdenCompra().isEmpty()) {
                 DetalleOrdenCompra primerDetalle = ordenExistente.getDetalleOrdenCompra().get(0);
                 Articulo articulo = primerDetalle.getArticulo();
-                if (articulo != null && articulo.getDatosModeloInventario() != null && !articulo.getDatosModeloInventario().isEmpty()) {
-                    Integer inventarioMaximo = articulo.getDatosModeloInventario().get(0).getInventarioMaximo();
+                if (articulo != null) {
+                    DatosModeloInventario datosActivos = datosModeloInventarioService.obtenerDatosModeloInventarioActivo(articulo);
+                    Integer inventarioMaximo = datosActivos != null ? datosActivos.getInventarioMaximo() : null;
                     Integer stockActual = articulo.getStockActual();
                     if (nuevaCantidad <= 0) {
                         throw new Exception("La cantidad solicitada debe ser mayor a cero");
@@ -140,8 +146,8 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
                         throw new Exception("La cantidad solicitada supera el inventario máximo por " + exceso + " unidades");
                     }
 
-                    if (articulo.getModeloInventario() == ModeloInventario.LoteFijo) {
-                        Integer puntoPedido = articulo.getDatosModeloInventario().get(0).getPuntoPedido();
+                    if (articulo.getModeloInventario() == ModeloInventario.LoteFijo && datosActivos != null) {
+                        Integer puntoPedido = datosActivos.getPuntoPedido();
                         if (puntoPedido != null && stockActual != null && stockActual + nuevaCantidad <= puntoPedido) {
                             throw new Exception("La cantidad solicitada no supera el Punto de Pedido de "
                                     + puntoPedido + " unidades para el artículo con ID: " + articulo.getId());
@@ -216,10 +222,9 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
                         articulo.setStockActual(articulo.getStockActual() + cantidadComprada);
                         articuloRepository.save(articulo);
 
-                        if (articulo.getModeloInventario() == ModeloInventario.LoteFijo
-                                && articulo.getDatosModeloInventario() != null
-                                && !articulo.getDatosModeloInventario().isEmpty()) {
-                            Integer puntoPedido = articulo.getDatosModeloInventario().get(0).getPuntoPedido();
+                        if (articulo.getModeloInventario() == ModeloInventario.LoteFijo) {
+                            DatosModeloInventario datosActivos = datosModeloInventarioService.obtenerDatosModeloInventarioActivo(articulo);
+                            Integer puntoPedido = datosActivos != null ? datosActivos.getPuntoPedido() : null;
                             if (puntoPedido != null && articulo.getStockActual() <= puntoPedido) {
                                 System.out.println("AVISO: El stock del artículo " + articulo.getNombreArticulo()
                                         + " no supera el Punto de Pedido de " + puntoPedido + " unidades");
@@ -284,12 +289,11 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
         nuevaOC.setAutomatica(true);
 
 
-        Integer stockActual = articulo.getStockActual() != null ? articulo.getStockActual() : 0;
-        Integer cantidadAOrdenar = datosModelo.getLoteOptimo() - stockActual;
+        Integer cantidadAOrdenar = datosModelo.getLoteOptimo();
 
-        if (cantidadAOrdenar <= 0) {
-            throw new Exception("No es necesario crear una orden: El stock actual del artículo '" +
-                    articulo.getNombreArticulo() + "' ya supera o iguala al lote óptimo.");
+        if (cantidadAOrdenar == null || cantidadAOrdenar <= 0) {
+            throw new Exception("No es necesario crear una orden: El Lote Óptimo definido para el artículo '" +
+                    articulo.getNombreArticulo() + "' no es válido.");
         }
 
         DetalleOrdenCompra detalle = new DetalleOrdenCompra();
@@ -318,30 +322,28 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
             LocalDateTime ultimaRevision = articulo.getFechaUltimaRevision();
 
             boolean debeRevisarse = false;
-            if (tiempoRevision != null) {
-                if (ultimaRevision == null) {
-                    debeRevisarse = true;
-                } else {
-                    debeRevisarse = !ultimaRevision.plusDays(tiempoRevision).isAfter(ahora);
-                }
+            if (ultimaRevision == null) {
+                debeRevisarse = true;
+            } else if (tiempoRevision != null) {
+                debeRevisarse = !ultimaRevision.plusDays(tiempoRevision).isAfter(ahora);
             }
 
             if (debeRevisarse) {
-                Integer loteOptimo = null;
+                Integer inventarioMaximo = null;
                 if (articulo.getDatosModeloInventario() != null) {
                     for (DatosModeloInventario datos : articulo.getDatosModeloInventario()) {
-                        if (datos.getModeloInventario() == ModeloInventario.IntervaloFijo) {
-                            loteOptimo = datos.getLoteOptimo();
+                        if (datos.getModeloInventario() == ModeloInventario.IntervaloFijo && datos.getFechaBaja() == null) {
+                            inventarioMaximo = datos.getInventarioMaximo();
                             break;
                         }
                     }
                 }
 
-                if (loteOptimo != null && articulo.getProveedorPredeterminado() != null) {
+                if (inventarioMaximo != null && articulo.getProveedorPredeterminado() != null) {
                     if (existeOrdenCompraActivaParaArticulo(articulo.getId())) {
                         continue;
                     }
-                    int cantidadNecesaria = loteOptimo - articulo.getStockActual();
+                    int cantidadNecesaria = inventarioMaximo - articulo.getStockActual();
                     if (cantidadNecesaria > 0) {
                         OrdenCompra oc = new OrdenCompra();
                         oc.setProveedor(articulo.getProveedorPredeterminado());

@@ -23,8 +23,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (cantidadInput && selectedOption) {
                 const stock = parseInt(selectedOption.getAttribute('data-stock'));
                 const lote = parseInt(selectedOption.getAttribute('data-lote'));
+                const max = parseInt(selectedOption.getAttribute('data-max'));
+                const modelo = selectedOption.getAttribute('data-modelo');
                 if (!cantidadInput.value) {
-                    const sugerido = lote - stock;
+                    let sugerido = 0;
+                    if (modelo === 'LoteFijo') {
+                        sugerido = lote;
+                    } else if (modelo === 'IntervaloFijo') {
+                        sugerido = max - stock;
+                    } else {
+                        sugerido = lote - stock;
+                    }
                     cantidadInput.value = sugerido > 0 ? sugerido : 0;
                 }
             }

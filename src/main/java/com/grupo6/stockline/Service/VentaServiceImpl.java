@@ -7,6 +7,7 @@ import com.grupo6.stockline.Entities.Venta;
 import com.grupo6.stockline.Enum.EstadoOrdenCompra;
 import com.grupo6.stockline.Enum.ModeloInventario;
 import com.grupo6.stockline.Repositories.*;
+import com.grupo6.stockline.Service.DatosModeloInventarioService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,8 @@ public class VentaServiceImpl extends BaseServiceImpl<Venta, Long> implements Ve
     DetalleVentaRepository detalleVentaRepository;
     @Autowired
     DatosModeloInventarioRepository datosModeloInventarioRepository;
+    @Autowired
+    DatosModeloInventarioService datosModeloInventarioService;
     @Autowired
     OrdenCompraRepository ordenCompraRepository;
     @Autowired
@@ -85,8 +88,10 @@ public class VentaServiceImpl extends BaseServiceImpl<Venta, Long> implements Ve
             return;
         }
 
-        DatosModeloInventario datosModelo = datosModeloInventarioRepository.findByArticulo(articulo)
-                .orElseThrow(() -> new Exception("No se encontraron datos de modelo de inventario para el artículo: " + articulo.getNombreArticulo()));
+        DatosModeloInventario datosModelo = datosModeloInventarioService.obtenerDatosModeloInventarioActivo(articulo);
+        if (datosModelo == null) {
+            throw new Exception("No se encontraron datos de modelo de inventario para el artículo: " + articulo.getNombreArticulo());
+        }
 
         boolean necesitaReposicion = articulo.getStockActual() <= datosModelo.getPuntoPedido();
 
