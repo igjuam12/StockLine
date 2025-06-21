@@ -283,9 +283,18 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
         nuevaOC.setFechaModificacionOrdenCompra(LocalDateTime.now());
         nuevaOC.setAutomatica(true);
 
+
+        Integer stockActual = articulo.getStockActual() != null ? articulo.getStockActual() : 0;
+        Integer cantidadAOrdenar = datosModelo.getLoteOptimo() - stockActual;
+
+        if (cantidadAOrdenar <= 0) {
+            throw new Exception("No es necesario crear una orden: El stock actual del artículo '" +
+                    articulo.getNombreArticulo() + "' ya supera o iguala al lote óptimo.");
+        }
+
         DetalleOrdenCompra detalle = new DetalleOrdenCompra();
         detalle.setArticulo(articulo);
-        detalle.setCantidad(datosModelo.getLoteOptimo());
+        detalle.setCantidad(cantidadAOrdenar);
         detalle.setOrdenCompra(nuevaOC);
 
         List<DetalleOrdenCompra> detalles = new ArrayList<>();
@@ -298,7 +307,7 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
     @Override
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
-    public void crearOrdenCompraAutomatica() throws Exception {
+    public void crearOrdenAutomaticaParaIntervaloFijo() throws Exception {
         List<Articulo> articulos = articuloRepository
                 .findByFechaBajaIsNullAndModeloInventario(ModeloInventario.IntervaloFijo);
 
@@ -359,4 +368,3 @@ public class OrdenCompraServiceImpl extends BaseServiceImpl<OrdenCompra, Long> i
         }
     }
 }
-

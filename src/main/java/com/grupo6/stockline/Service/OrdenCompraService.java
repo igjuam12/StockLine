@@ -23,7 +23,7 @@ public interface OrdenCompraService extends BaseService<OrdenCompra, Long> {
 
     List<OrdenCompra> findOrdenCompraByEstadoAndArticulo(EstadoOrdenCompra estado, Long articuloId) throws Exception;
 
-    void crearOrdenCompraAutomatica() throws Exception;
+    void crearOrdenAutomaticaParaIntervaloFijo() throws Exception;
 
     OrdenCompra crearOrdenAutomaticaParaLoteFijo(Articulo articulo, DatosModeloInventario datosModelo) throws Exception;
 }
