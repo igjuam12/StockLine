@@ -113,24 +113,27 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
 
             for (Articulo a : articuloList) {
                 List<DatosModeloInventario> datosInventario = a.getDatosModeloInventario();
-
                 List<DetalleOrdenCompra> detallesArticulos = a.getDetalleOrdenCompra();
 
                 //Verifico que el Articulo no este en ninguna Orden de compra con Estado "Pendiente" o "Enviada"
-                Boolean sinOrdenes = true;
+                boolean sinOrdenes = true;
                 for (DetalleOrdenCompra dOC : detallesArticulos) {
                     if (dOC.getOrdenCompra().getEstadoOrdenCompra() == EstadoOrdenCompra.PENDIENTE
                             || dOC.getOrdenCompra().getEstadoOrdenCompra() == EstadoOrdenCompra.ENVIADA) {
                         sinOrdenes = false;
+                        break;
                     }
                 }
 
                 //Por cada Articulo me traigo todos los DatosModeloInventario y obtengo el ultimo(FechaBaja es Null)
                 for (DatosModeloInventario dmi : datosInventario) {
                     //Verifico que StockActual <= PP y sinOrdenes sea Verdadero
+
                     if (dmi.getFechaBaja() == null &&
-                            a.getStockActual() <= dmi.getPuntoPedido() && sinOrdenes
-                            && a.getModeloInventario() == ModeloInventario.LoteFijo) {
+                            dmi.getPuntoPedido() != null &&
+                            a.getStockActual() <= dmi.getPuntoPedido() &&
+                            sinOrdenes &&
+                            a.getModeloInventario() == ModeloInventario.LoteFijo) {
                         listaArticulosAReponer.add(a);
                     }
                 }
@@ -141,7 +144,6 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             throw new IllegalStateException(e.getMessage());
         }
     }
-
     @Override
     public List<Articulo> listarArticulosFaltantes() throws Exception {
         try {
@@ -175,6 +177,10 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
         try {
             Proveedor proveedor = proveedorRepository.findById(idProveedor).
                     orElseThrow(() -> new IllegalArgumentException("No se pudo asignar el proveedor: No existe"));
+
+            if(proveedor.getFechaBaja() != null){
+                throw new IllegalStateException("No se pudo asignar el proveedor: Proveedor dado de baja");
+            }
 
             articulo.setProveedorPredeterminado(proveedor);
             calcularModeloInventario(articulo.getId());
@@ -219,7 +225,13 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
 
             double costoArticulo = articuloProveedor.getCostoCompra();
             double costoPedido = articuloProveedor.getCostoPedido();
-            Integer loteOptimo = datos.getLoteOptimo();
+
+            Integer loteOptimo = 0;
+            if(articulo.getModeloInventario() == ModeloInventario.LoteFijo){
+                loteOptimo = datos.getLoteOptimo();
+            } else if (articulo.getModeloInventario() == ModeloInventario.IntervaloFijo) {
+                loteOptimo = datos.getInventarioMaximo() - articulo.getStockActual();
+            }
 
             //CGI = D*C + Cp*D/Q + Ca*Q/2
             Double cgi = (double) ((demandaArticulo*costoArticulo) + ((costoPedido*demandaArticulo)/loteOptimo) +
@@ -334,13 +346,17 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
 
             DatosModeloInventario datosNuevo = new DatosModeloInventario();
 
-            Integer stockSeguridad = Math.toIntExact(round(1.64 * 5 *
+            int stockSeguridad = Math.toIntExact(round(1.64 * 5 *
                     sqrt((articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()))));
-            Integer loteOptimo = round((articulo.getDemandaArticulo()/360)*
-                    (articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()) + stockSeguridad - articulo.getStockActual());
+
+
+            int invMax = round((articulo.getDemandaArticulo()/360)*
+                            (articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()) + stockSeguridad);
+
 
             datosNuevo.setStockSeguridad(stockSeguridad);
-            datosNuevo.setLoteOptimo(loteOptimo);
+            datosNuevo.setInventarioMaximo(invMax);
+
             datosNuevo.setArticulo(articulo);
             datosNuevo.setModeloInventario(articulo.getModeloInventario());
 

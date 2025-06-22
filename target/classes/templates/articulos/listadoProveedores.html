@@ -11,7 +11,6 @@
             <table class="min-w-full divide-y divide-gray-200 text-center">
                 <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2">Id</th>
                     <th class="px-4 py-2">Nombre</th>
                     <th class="px-4 py-2">Precio</th>
                     <th class="px-4 py-2">Demora</th>
@@ -21,7 +20,6 @@
                 </thead>
                 <tbody>
                 <tr th:each="articuloProveedor : ${articuloProveedores}">
-                    <td th:text="${articuloProveedor.articulo.id}"></td>
                     <td th:text="${articuloProveedor.proveedor.nombreProveedor}"></td>
                     <td th:text="${articuloProveedor.costoCompra}"></td>
                     <td th:text="${articuloProveedor.demoraEntrega}"></td>
