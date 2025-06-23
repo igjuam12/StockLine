@@ -149,7 +149,7 @@ public class ArticuloController{
             Articulo articulo = articuloService.findById(idArticulo);
             Double cgi = articuloService.calcularCGI(idArticulo);
 
-            model.addAttribute("nombre", articulo.getNombreArticulo());
+            model.addAttribute("articulo", articulo);
             model.addAttribute("cgi", cgi);
 
         } catch (IllegalStateException e) {

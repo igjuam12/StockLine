@@ -48,9 +48,9 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
         articuloProveedorExistente.setCostoPedido(articuloProveedor.getCostoPedido());
         articuloProveedorExistente.setDemoraEntrega(articuloProveedor.getDemoraEntrega());
         articuloProveedorExistente.setCostoCompra(articuloProveedor.getCostoCompra());
-        articuloService.calcularModeloInventario(articuloProveedor.getArticulo().getId());
 
         articuloProveedorRepository.save(articuloProveedorExistente);
+        articuloService.calcularModeloInventario(articuloProveedor.getArticulo().getId());
     }
 
     @Override

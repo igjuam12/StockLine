@@ -58,10 +58,10 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             // 4. Aquí, le asignas el ID al objeto nuevo que viene del formulario.
             articulo.setId(id);
 
-            calcularModeloInventario(articulo.getId());
-
             // 5. ESTA LÍNEA ES LA FUENTE DEL ERROR.
             articuloRepository.save(articulo);
+
+            calcularModeloInventario(articulo.getId());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -183,8 +183,8 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             }
 
             articulo.setProveedorPredeterminado(proveedor);
-            calcularModeloInventario(articulo.getId());
             articuloRepository.save(articulo);
+            calcularModeloInventario(articulo.getId());
 
         }catch (IllegalStateException e){
             throw new IllegalStateException(e.getMessage());
@@ -219,7 +219,7 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
                 throw new IllegalStateException("No se ha asignado un proveedor predeterminado");
             }
 
-            if (articuloProveedor.getCostoCompra() == 0 || articuloProveedor.getCostoPedido() == 0 || datos.getLoteOptimo() == null) {
+            if (articuloProveedor.getCostoCompra() == 0 || articuloProveedor.getCostoPedido() == 0) {
                 throw new IllegalStateException("No se puede calcular el CGI: datos incompletos");
             }
 

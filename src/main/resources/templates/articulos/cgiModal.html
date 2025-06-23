@@ -11,7 +11,7 @@
 
   <!-- Solo mostrar datos si no hay error -->
   <div th:if="${errorCGI == null}">
-    <p><strong>Nombre:</strong> <span th:text="${nombre}"></span></p>
+    <p><strong>Nombre:</strong> <span th:text="${articulo.nombreArticulo}"></span></p>
     <p><strong>CGI:</strong> <span th:text="${cgi}"></span></p>
   </div>
 
