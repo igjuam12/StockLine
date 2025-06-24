@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface DatosModeloInventarioRepository extends BaseRepository<DatosModeloInventario, Long>{
     Optional<DatosModeloInventario> findByArticulo(Articulo articulo);
+
+    DatosModeloInventario findByArticulo_FechaBaja(Articulo articulo);
 }

@@ -12,23 +12,19 @@
   <!-- Solo mostrar datos si no hay error -->
   <div th:if="${errorCGI == null}">
     <p><strong>Nombre:</strong> <span th:text="${articulo.nombreArticulo}"></span></p>
-    <p><strong>CGI:</strong> <span th:text="${cgi}"></span></p>
-  </div>
-
-  <div th:if="${datosModelo != null}">
-    <div th:switch="${articulo.modeloInventario}">
-      <div th:case="'LoteFijo'">
-        <p><strong>Punto de Pedido:</strong> <span th:text="${datosModelo.puntoPedido}"></span></p>
-        <p><strong>Stock de Seguridad:</strong> <span th:text="${datosModelo.stockSeguridad}"></span></p>
-        <p><strong>Lote Óptimo:</strong> <span th:text="${datosModelo.loteOptimo}"></span></p>
-      </div>
-      <div th:case="'IntervaloFijo'">
-        <p><strong>Inventario Máximo:</strong> <span th:text="${datosModelo.inventarioMaximo}"></span></p>
-        <p><strong>Stock de Seguridad:</strong> <span th:text="${datosModelo.stockSeguridad}"></span></p>
-      </div>
+    <p><strong>CGI:</strong>
+      <span class="font-bold text-blue-600"
+            th:text="'$' + ${#numbers.formatDecimal(cgi, 1, 'POINT', 2, 'COMMA')}">
+    </span>
+    </p>
+    <div th:if="${datosInventario != null}" class="mt-2 space-y-1">
+      <p><strong>Modelo Inventario:</strong> <span th:text="${datosInventario.modeloInventario}"></span></p>
+      <p th:if="${datosInventario.stockSeguridad != null}"><strong>Stock Seguridad:</strong> <span th:text="${datosInventario.stockSeguridad}"></span></p>
+      <p th:if="${datosInventario.loteOptimo != null}"><strong>Lote Óptimo:</strong> <span th:text="${datosInventario.loteOptimo}"></span></p>
+      <p th:if="${datosInventario.inventarioMaximo != null}"><strong>Inventario Máximo:</strong> <span th:text="${datosInventario.inventarioMaximo}"></span></p>
+      <p th:if="${datosInventario.puntoPedido != null}"><strong>Punto de Pedido:</strong> <span th:text="${datosInventario.puntoPedido}"></span></p>
     </div>
   </div>
-
 
   <div class="mt-4 text-right">
     <button onclick="cerrarModalCGI()" class="btn-secondary">Cerrar</button>

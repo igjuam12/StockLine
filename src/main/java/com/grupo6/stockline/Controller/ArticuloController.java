@@ -6,6 +6,7 @@ import com.grupo6.stockline.Enum.ModeloInventario;
 import com.grupo6.stockline.Service.ArticuloProveedorService;
 import com.grupo6.stockline.Service.ArticuloService;
 import com.grupo6.stockline.Service.ProveedorService;
+import com.grupo6.stockline.Service.DatosModeloInventarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,8 @@ public class ArticuloController{
     private final ArticuloService articuloService;
     private final ProveedorService proveedorService;
     private final ArticuloProveedorService articuloProveedorService;
+    private final DatosModeloInventarioService datosModeloInventarioService;
+
 
     @GetMapping("/crear")
     public String mostrarFormularioArticulo(Model model) throws Exception{
@@ -148,9 +151,11 @@ public class ArticuloController{
         try {
             Articulo articulo = articuloService.findById(idArticulo);
             Double cgi = articuloService.calcularCGI(idArticulo);
+            DatosModeloInventario datosInventario = datosModeloInventarioService.obtenerDatosModeloInventarioActivo(articulo);
 
             model.addAttribute("articulo", articulo);
             model.addAttribute("cgi", cgi);
+            model.addAttribute("datosInventario", datosInventario);
 
         } catch (IllegalStateException e) {
             model.addAttribute("errorCGI", e.getMessage());

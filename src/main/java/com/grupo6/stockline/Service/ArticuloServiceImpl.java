@@ -55,10 +55,9 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
             if (!articuloRepository.existsById(id)) {
                 throw new Exception("No se puede actualizar: entidad no encontrada con ID: " + id);
             }
-            // 4. Aquí, le asignas el ID al objeto nuevo que viene del formulario.
+
             articulo.setId(id);
 
-            // 5. ESTA LÍNEA ES LA FUENTE DEL ERROR.
             articuloRepository.save(articulo);
 
             calcularModeloInventario(articulo.getId());
@@ -283,11 +282,10 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
         }
     }
 
-    public void calcularModeloLoteFijo(Articulo articulo) throws Exception{
-        try{
-            List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
+    public void calcularModeloLoteFijo(Articulo articulo) throws Exception {
+        try {
 
-            //Me traigo el ultimo DatosModelo Inventario y lo doy de baja
+            List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
             for (DatosModeloInventario d: datosLista){
                 if(d.getFechaBaja() == null){
                     d.setFechaBaja(LocalDateTime.now());
@@ -297,30 +295,34 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
 
             ArticuloProveedor articuloProveedor = articuloProveedorRepository.findByProveedorAndArticulo(articulo.getProveedorPredeterminado().getId(),
                     articulo.getId());
-
             DatosModeloInventario datosNuevo = new DatosModeloInventario();
 
-            //Q = sqrt(2*D*Cp/Ca)
-            Integer loteOptimo = Math.toIntExact(round((sqrt(((2 * articulo.getDemandaArticulo()
-                    * articuloProveedor.getCostoPedido()) / (articulo.getCostoAlmacenamiento()))))));
+            // 1. Convertimos la demanda anual a demanda diaria
+            double demandaDiaria = (double) articulo.getDemandaArticulo() / 360.0;
 
-            //SS = z*de
-            Integer stockSeguridad = Math.toIntExact(round((1.64 * sqrt(5 * articuloProveedor.getDemoraEntrega()))));
+            // 2. Calculamos Sigma como el 20% de la demanda DIARIA
+            double sigmaDiario = demandaDiaria * 0.20;
 
-            //PP
-            Integer puntoPedido = ((articulo.getDemandaArticulo()*articuloProveedor.getDemoraEntrega())/360)
-                    + stockSeguridad;
+            // Asegúrate de que CostoAlmacenamiento también esté en base anual.
+            Integer loteOptimo = (int) Math.round(Math.sqrt((2.0 * articulo.getDemandaArticulo()
+                    * articuloProveedor.getCostoPedido()) / articulo.getCostoAlmacenamiento()));
+
+            // SS = Z * σd * sqrt(L)
+            double valorZ = 1.64; // Nivel de servicio ~95%
+            Integer stockSeguridad = (int) Math.ceil(valorZ * sigmaDiario * Math.sqrt(articuloProveedor.getDemoraEntrega()));
+
+            // PP = (Demanda durante el lead time) + SS
+            Integer puntoPedido = (int) Math.round(demandaDiaria * articuloProveedor.getDemoraEntrega()) + stockSeguridad;
 
             datosNuevo.setLoteOptimo(loteOptimo);
             datosNuevo.setPuntoPedido(puntoPedido);
             datosNuevo.setStockSeguridad(stockSeguridad);
             datosNuevo.setArticulo(articulo);
             datosNuevo.setModeloInventario(articulo.getModeloInventario());
-
             datosNuevo.setFechaAlta(LocalDateTime.now());
-            datosLista.add(datosNuevo);
-            articulo.setDatosModeloInventario(datosLista);
+
             datosRepository.save(datosNuevo);
+
             articuloRepository.save(articulo);
 
         } catch (Exception e) {
@@ -328,46 +330,44 @@ public class ArticuloServiceImpl extends BaseServiceImpl<Articulo, Long> impleme
         }
     }
 
-    public void calcularModeloIntervaloFijo(Articulo articulo) throws Exception{
+    public void calcularModeloIntervaloFijo(Articulo articulo) throws Exception {
         try {
-            List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
 
-            //Me traigo el ultimo DatosModelo Inventario y lo doy de baja
+            List<DatosModeloInventario> datosLista = articulo.getDatosModeloInventario();
             for (DatosModeloInventario d : datosLista) {
                 if (d.getFechaBaja() == null) {
                     d.setFechaBaja(LocalDateTime.now());
                     datosRepository.save(d);
                 }
             }
-
             ArticuloProveedor articuloProveedor = articuloProveedorRepository.findByProveedorAndArticulo(articulo.getProveedorPredeterminado().getId(),
                     articulo.getId());
-
-
             DatosModeloInventario datosNuevo = new DatosModeloInventario();
 
-            int stockSeguridad = Math.toIntExact(round(1.64 * 5 *
-                    sqrt((articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()))));
+            // 1. Convertimos la demanda anual a demanda diaria
+            double demandaDiaria = (double) articulo.getDemandaArticulo() / 360.0;
 
+            // 2. Calculamos Sigma como el 20% de la demanda diaria
+            double sigmaDiario = demandaDiaria * 0.20;
 
-            int invMax = round((articulo.getDemandaArticulo()/360)*
-                            (articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision()) + stockSeguridad);
+            // SS = Z * σd * sqrt(T + L)
+            double valorZ = 1.64;
+            int tiempoTotalRiesgo = articuloProveedor.getDemoraEntrega() + articulo.getTiempoRevision();
+            int stockSeguridad = (int) Math.ceil(valorZ * sigmaDiario * Math.sqrt(tiempoTotalRiesgo));
 
+            // M = (Demanda durante T+L) + SS
+            int invMax = (int) Math.round(demandaDiaria * tiempoTotalRiesgo) + stockSeguridad;
 
             datosNuevo.setStockSeguridad(stockSeguridad);
             datosNuevo.setInventarioMaximo(invMax);
-
             datosNuevo.setArticulo(articulo);
             datosNuevo.setModeloInventario(articulo.getModeloInventario());
-
             datosNuevo.setFechaAlta(LocalDateTime.now());
-            datosLista.add(datosNuevo);
-            articulo.setDatosModeloInventario(datosLista);
-
 
             datosRepository.save(datosNuevo);
 
             articuloRepository.save(articulo);
+
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage());
         }

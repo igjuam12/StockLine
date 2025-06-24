@@ -8,13 +8,14 @@
 
             <div class="mb-4 p-4 bg-gray-100 rounded-lg">
                 <p><strong>Proveedor:</strong> <span th:text="${asociacion.proveedor?.nombreProveedor}"></span></p>
-                <input type="hidden" name="proveedorId" th:if="${isEditMode}" th:value="${asociacion.proveedor?.id}" />
+                <input type="hidden" name="proveedor" th:value="${asociacion.proveedor?.id}" />
             </div>
 
             <div class="mt-4">
                 <div th:if="${isEditMode}" class="mb-4 p-4 bg-gray-100 rounded-lg">
                     <p><strong>Artículo:</strong> <span th:text="${asociacion.articulo?.nombreArticulo}"></span></p>
-                    <input type="hidden" th:field="*{articulo.id}" />
+
+                    <input type="hidden" name="articulo" th:value="${asociacion.articulo?.id}" />
                 </div>
 
                 <div th:unless="${isEditMode}">
@@ -30,7 +31,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div>
-                    <label for="costoCompra" class="block text-sm font-medium text-gray-700">Precio Unitario ($):</label>
+                    <label for="precioArticulo" class="block text-sm font-medium text-gray-700">Costo compra ($):</label>
                     <input type="number" step="0.01" th:field="*{costoCompra}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                 </div>
                 <div>
@@ -38,7 +39,7 @@
                     <input type="number" th:field="*{demoraEntrega}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                 </div>
                 <div>
-                    <label for="costoPedido" class="block text-sm font-medium text-gray-700">Cargos por Pedido ($):</label>
+                    <label for="costoPedido" class="block text-sm font-medium text-gray-700">Costo pedido ($):</label>
                     <input type="number" step="0.01" th:field="*{costoPedido}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                 </div>
             </div>
