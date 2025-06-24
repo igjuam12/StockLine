@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +34,23 @@ public class ProveedorServiceImpl extends BaseServiceImpl<Proveedor, Long> imple
     }
 
     @Override
+    @Transactional
+    public void save(Proveedor proveedor) throws Exception {
+
+        if (proveedorRepository.existsByNombreProveedor(proveedor.getNombreProveedor())) {
+            throw new Exception("Ya existe un proveedor con el nombre: " + proveedor.getNombreProveedor());
+        }
+
+        if (proveedor.getArticuloProveedor() == null || proveedor.getArticuloProveedor().isEmpty() || proveedor.getArticuloProveedor().get(0).getArticulo() == null) {
+            throw new Exception("El proveedor debe estar asociado al menos a un artículo válido.");
+        }
+
+        proveedor.asociarArticuloProveedor();
+        super.save(proveedor);
+    }
+
+    @Override
+    @Transactional
     public void update(Long id, Proveedor proveedor){
         Proveedor proveedorExistente = proveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));
@@ -43,6 +61,7 @@ public class ProveedorServiceImpl extends BaseServiceImpl<Proveedor, Long> imple
     }
 
     @Override
+    @Transactional
     public void delete(Long id) throws Exception {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado"));

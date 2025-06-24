@@ -75,7 +75,7 @@ public class ArticuloProveedorController {
         try {
             articuloProveedorService.delete(id);
             redirectAttributes.addFlashAttribute("exito", "Artículo desasociado correctamente.");
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/proveedor/" + proveedorId + "/articulos";

@@ -2,6 +2,7 @@ package com.grupo6.stockline.Service;
 
 import com.grupo6.stockline.Entities.Articulo;
 import com.grupo6.stockline.Entities.ArticuloProveedor;
+import com.grupo6.stockline.Entities.Proveedor;
 import com.grupo6.stockline.Enum.EstadoOrdenCompra;
 import com.grupo6.stockline.Repositories.ArticuloProveedorRepository;
 import com.grupo6.stockline.Repositories.BaseRepository;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +44,25 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
     }
 
     @Override
+    @Transactional
+    public void save(ArticuloProveedor entity) throws Exception {
+        Proveedor proveedor = entity.getProveedor();
+        Articulo articulo = entity.getArticulo();
+
+        if (proveedor == null || articulo == null) {
+            throw new Exception("La asociación debe tener un Proveedor y un Artículo asignados.");
+        }
+
+        if (articuloProveedorRepository.existsByProveedorAndArticuloAndFechaBajaIsNull(proveedor, articulo)) {
+            throw new Exception("El proveedor '" + proveedor.getNombreProveedor() +
+                    "' ya está asociado  al artículo '" + articulo.getNombreArticulo() + "'.");
+        }
+
+        super.save(entity);
+    }
+
+    @Override
+    @Transactional
     public void update(Long id, ArticuloProveedor articuloProveedor) throws Exception {
         ArticuloProveedor articuloProveedorExistente = articuloProveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Asociacion no encontrada"));
@@ -54,6 +75,7 @@ public class ArticuloProveedorServiceImpl extends BaseServiceImpl<ArticuloProvee
     }
 
     @Override
+    @Transactional
     public void delete(Long id) throws Exception {
         ArticuloProveedor asociacion = articuloProveedorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Asociacion no encontrada"));

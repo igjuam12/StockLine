@@ -41,7 +41,6 @@ public class ProveedorController {
     @PostMapping("/crear")
     public String procesarProveedor(@ModelAttribute Proveedor proveedor, RedirectAttributes redirectAttributes) throws Exception {
         try {
-            proveedor.asociarArticuloProveedor();
             proveedorService.save(proveedor);
             redirectAttributes.addFlashAttribute("exito", "Proveedor creado correctamente.");
         } catch (Exception e) {
