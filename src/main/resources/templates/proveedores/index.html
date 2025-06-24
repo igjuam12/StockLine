@@ -23,8 +23,8 @@
                     class="text-center transition-colors">
                     <td th:text="${proveedor.nombreProveedor}" class="px-4 py-2"></td>
                     <td th:text="${proveedor.mailProveedor}" class="px-4 py-2"></td>
-                    <td th:text="${proveedor.fechaAlta}" class="px-4 py-2"></td>
-                    <td th:text="${proveedor.fechaBaja}" class="px-4 py-2"></td>
+                    <td th:text="${#temporals.format(proveedor.fechaAlta, 'dd/MM/yyyy HH:mm')}" class="px-4 py-2"></td>
+                    <td th:text="${#temporals.format(proveedor.fechaBaja, 'dd/MM/yyyy HH:mm')}" class="px-4 py-2"></td>
                     <td class="px-4 py-2">
                         <a th:href="@{/proveedor/{id}/modificar(id=${proveedor.id})}" class="action-icon action-icon-edit">
                             <i class="fas fa-edit"></i>

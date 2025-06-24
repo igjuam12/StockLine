@@ -8,7 +8,8 @@
 
             <div class="mb-4 p-4 bg-gray-100 rounded-lg">
                 <p><strong>Proveedor:</strong> <span th:text="${asociacion.proveedor?.nombreProveedor}"></span></p>
-                <input type="hidden" name="proveedor" th:value="${asociacion.proveedor?.id}" />
+                <input type="hidden" name="proveedor" th:if="${!isEditMode}" th:value="${asociacion.proveedor?.id}" />
+                <input type="hidden" name="proveedorId" th:if="${isEditMode}" th:value="${asociacion.proveedor?.id}" />
             </div>
 
             <div class="mt-4">
