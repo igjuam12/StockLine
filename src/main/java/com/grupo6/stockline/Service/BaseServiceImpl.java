@@ -66,4 +66,12 @@ public abstract class BaseServiceImpl<E extends Base, ID extends Long> implement
             throw new Exception("Error al eliminar la entidad: " + e.getMessage(), e);
         }
     }
+
+    public List<E> findAllActive() throws Exception {
+        try {
+            return baseRepository.findAllActive();
+        } catch (Exception e) {
+            throw new Exception("Error al obtener los datos: " + e.getMessage(), e);
+        }
+    }
 }

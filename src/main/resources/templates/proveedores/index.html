@@ -2,7 +2,7 @@
     <section class="bg-white p-6 rounded-xl shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">Gestión de Proveedores</h2>
-            <a th:href="@{/proveedor/nuevo}" class="btn-primary">
+            <a th:href="@{/proveedor/crear}" class="btn-primary">
                 <i class="fas fa-plus mr-2"></i>Nuevo Proveedor
             </a>
         </div>
@@ -18,16 +18,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="proveedor : ${listaProveedores}" class="text-center">
+                <tr th:each="proveedor : ${listaProveedores}"
+                    th:classappend="${proveedor.fechaBaja != null} ? 'bg-gray-100 pointer-events-none opacity-50' : ''"
+                    class="text-center transition-colors">
                     <td th:text="${proveedor.nombreProveedor}" class="px-4 py-2"></td>
                     <td th:text="${proveedor.mailProveedor}" class="px-4 py-2"></td>
-                    <td th:text="${proveedor.fechaAlta}" class="px-4 py-2"></td>
-                    <td th:text="${proveedor.fechaBaja}" class="px-4 py-2"></td>
+                    <td th:text="${#temporals.format(proveedor.fechaAlta, 'dd/MM/yyyy HH:mm')}" class="px-4 py-2"></td>
+                    <td th:text="${#temporals.format(proveedor.fechaBaja, 'dd/MM/yyyy HH:mm')}" class="px-4 py-2"></td>
                     <td class="px-4 py-2">
-                        <a th:href="@{/proveedor/editar/{id}(id=${proveedor.id})}" class="action-icon action-icon-edit">
+                        <a th:href="@{/proveedor/{id}/modificar(id=${proveedor.id})}" class="action-icon action-icon-edit">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <a th:href="@{/proveedor/eliminar/{id}(id=${proveedor.id})}" class="action-icon action-icon-delete">
+                        <a href="#"
+                           th:attr="data-id=${proveedor.id}, data-path='proveedor'"
+                           onclick="abrirModal(this, event)"
+                           class="action-icon action-icon-delete">
                             <i class="fas fa-trash"></i>
                         </a>
                         <a th:href="@{/proveedor/{id}/articulos(id=${proveedor.id})}" class="action-icon action-icon-details">
@@ -40,3 +45,4 @@
         </div>
     </section>
 </div>
+

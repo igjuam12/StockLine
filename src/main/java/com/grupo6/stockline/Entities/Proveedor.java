@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,7 @@ public class Proveedor extends Base{
     private String mailProveedor;
     private String nombreProveedor;
 
-    @OneToMany(mappedBy = "proveedor")
+    @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL)
     private List<ArticuloProveedor> articuloProveedor;
 
     @OneToMany(mappedBy = "proveedorPredeterminado")
@@ -23,4 +24,13 @@ public class Proveedor extends Base{
 
     @OneToMany(mappedBy = "proveedor")
     private List<OrdenCompra> ordenCompra;
+
+    public void asociarArticuloProveedor() {
+        if (articuloProveedor != null) {
+            for (ArticuloProveedor ap : articuloProveedor) {
+                ap.setProveedor(this);
+            }
+        }
+    }
+
 }

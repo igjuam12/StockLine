@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.grupo6.stockline.StocklineApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.85 s -- in com.grupo6.stockline.StocklineApplicationTests

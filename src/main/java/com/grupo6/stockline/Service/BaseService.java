@@ -7,10 +7,11 @@ import java.util.List;
 
 public interface BaseService<E extends Base, ID extends Long>{
 
-    public List<E> findAll() throws Exception;
-    public E findById(ID id) throws Exception;
-    public void save(E entity) throws Exception;
-    public void update(ID id, E entity) throws Exception;
-    public void delete(ID id) throws Exception;
+     List<E> findAll() throws Exception;
+     E findById(ID id) throws Exception;
+     void save(E entity) throws Exception;
+     void update(ID id, E entity) throws Exception;
+     void delete(ID id) throws Exception;
+     List<E> findAllActive() throws Exception;
 
 }

@@ -8,21 +8,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="flex flex-col min-h-screen">
-
 <!-- NAVBAR -->
 <div th:replace="fragments/navbar :: navbar"></div>
-
-<!-- CONTENIDO -->
+<!-- MAIN -->
 <div class="flex-grow">
     <main class="py-6 sm:px-6 lg:px-8"
           th:with="fragmentPath=${contenido}">
+        <!-- MENSAJES -->
+        <div th:replace="fragments/mensajes :: mensajes"></div>
+        <!-- CONTENIDO -->
         <div th:replace="~{__${fragmentPath}__}"></div>
     </main>
 </div>
-
 <!-- FOOTER -->
 <div th:replace="fragments/footer :: footer"></div>
-
+<!-- MODAL BAJA -->
+<div th:replace="fragments/modal_baja :: modalBaja"></div>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
