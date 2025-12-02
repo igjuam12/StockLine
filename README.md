@@ -49,26 +49,11 @@ Este repositorio es una versión personal adaptada para mostrar mis aportes dent
 
 ---
 
-## 👤 Aportes realizados en este proyecto
-
-- Desarrollo completo del **módulo de Proveedores**:
-  - ABM  
-  - Asociación proveedor–artículo  
-  - Validaciones comerciales y restricciones de eliminación  
-- Implementación de la **generación automática de Órdenes de Compra**:
-  - Evaluación de stock y Punto de Pedido  
-  - Control de órdenes activas  
-  - Creación automática según modelo EOQ / Intervalo Fijo  
-  - Integración con módulo de ventas  
-- Organización y adaptación del repositorio para mostrarlo como portfolio.
-
----
-
 ## 🗂 Estructura general
 
 - `src/main/java/...` — Servicios, controladores, entidades y lógica de negocio.  
-- `src/main/resources/application.properties` — Configuración (DB, puerto, etc.)  
-- `src/main/resources/templates` — Vistas (si aplica).
+- `src/main/resources/application.properties` — Configuración.  
+- `src/main/resources/templates` — Vistas.
 
 ---
 
